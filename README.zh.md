@@ -106,4 +106,6 @@ cp -r skill/ ~/.claude/skills/system-of-skills/
 
 如果一组 agent skill 是你工作流的一部分，这一层迟早会找上你。现在 star 它，等那天来了你能找到。欢迎提 issue 和反例——这些原则是用来被打磨的，不是用来被供奉的。
 
-*License：本仓库的方法论文本在实际使用上 MIT 友好。想法本就该传播；如果帮到了你，引用回来即可。*
+---
+
+**作者：[k-r33](https://github.com/k-r33) @ [X32 Studio](https://github.com/X32Studio)** · MIT 协议。致谢与引用见 [AUTHORS.md](./AUTHORS.md)。

@@ -106,4 +106,6 @@ I hit the skill-shadowing problem on a real multi-agent codebase: two skills fir
 
 If a collection of agent skills is part of your workflow, this layer is coming for you eventually. Star it now so you find it when it does. Issues and counterexamples welcome; the principles are meant to be sharpened, not worshipped.
 
-*License: this repo's methodology text is MIT-friendly for practical use. The ideas are meant to spread; cite back if they help.*
+---
+
+**By [k-r33](https://github.com/k-r33) @ [X32 Studio](https://github.com/X32Studio)** · MIT licensed. See [AUTHORS.md](./AUTHORS.md) for credits and acknowledgements.
