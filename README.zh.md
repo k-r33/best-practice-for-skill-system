@@ -36,7 +36,7 @@ Skill 的集合，构成了 agent 的**能力系统**。当你把十个写得都
 
 ## 🔧 安装 Skill
 
-把这套方法论打包成了一个 Claude Code skill，让你在设计自己的 skill 系统时能直接用上：
+把这套方法论打包成了一个 agent skill，让你在设计自己的 skill 系统时能直接用上：
 
 ```bash
 cp -r skill/ ~/.claude/skills/system-of-skills/

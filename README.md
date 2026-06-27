@@ -2,7 +2,7 @@
 
 ---
 
-# System of Skills - How to organize Claude Code skills into a coherent system
+# System of Skills - How to organize agent skills into a coherent system
 
 Anthropic's docs teach you to write **one** good skill. They do not teach you what happens when you have ten of them.
 
@@ -68,7 +68,7 @@ Full definitions, the regime-gating matrix, and a worked multi-agent example liv
 
 ## Install
 
-Use this methodology from inside Claude Code:
+Use this methodology from inside Claude Code (or any agent that reads `~/.claude/skills/`):
 
 ```bash
 cp -r skill/ ~/.claude/skills/system-of-skills/

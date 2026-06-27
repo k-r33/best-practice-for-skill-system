@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Organize Claude Code Skills as a System: Stop Skill Trigger Conflicts</title>
-<meta name="description" content="How to organize Claude Code skills as a system. Six principles to stop skill trigger conflicts and decide when to build a new skill.">
-<meta name="keywords" content="claude code skills, organize agent skills, skill trigger conflict, when to build a new skill, agent skills best practices 2026, multi-skill system, claude skills architecture">
+<title>Organize Agent Skills as a System: Stop Skill Trigger Conflicts</title>
+<meta name="description" content="How to organize agent skills as a system. Six principles to stop skill trigger conflicts and decide when to build a new skill.">
+<meta name="keywords" content="agent skills, organize agent skills, skill trigger conflict, when to build a new skill, agent skills best practices 2026, multi-skill system, claude code skills, claude skills">
 <meta name="author" content="System of Skills">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#15151A">
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="Organize Claude Code Skills as a System">
+<meta property="og:title" content="Organize Agent Skills as a System">
 <meta property="og:description" content="Anthropic teaches how to write one skill. This is the missing layer: how to architect the whole collection and stop skills fighting each other.">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:url" content="https://k-r33.github.io/best-practice-for-skill-system/">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Organize Claude Code Skills as a System">
+<meta name="twitter:title" content="Organize Agent Skills as a System">
 <meta name="twitter:description" content="Six principles for the whole skill collection. The systems layer Anthropic's single-skill docs do not cover.">
 
 <link rel="canonical" href="https://k-r33.github.io/best-practice-for-skill-system/">
@@ -27,7 +27,7 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Organize Claude Code Skills as a System",
+  "headline": "Organize Agent Skills as a System",
   "description": "A systems-engineering methodology for designing a collection of agent skills as a coherent whole. Six principles plus an empirical eval loop.",
   "author": { "@type": "Organization", "name": "System of Skills" },
   "publisher": { "@type": "Organization", "name": "System of Skills" },
@@ -35,7 +35,7 @@
   "datePublished": "2026-06-27",
   "dateModified": "2026-06-27",
   "inLanguage": "en",
-  "keywords": "claude code skills, organize agent skills, skill trigger conflict, when to build a new skill, multi-skill system",
+  "keywords": "agent skills, organize agent skills, skill trigger conflict, when to build a new skill, multi-skill system",
   "mainEntityOfPage": "https://k-r33.github.io/best-practice-for-skill-system/",
   "about": {
     "@type": "Thing",
@@ -265,7 +265,7 @@
           Organizing ten<br>
           is where agents <span class="stop">break</span>.
         </h1>
-        <p class="sub">A methodology to <b>organize Claude Code skills</b> as a coherent system. Resolve <b>skill trigger conflicts</b>, decide <b>when to build a new skill</b>, and stop the failures that no single skill can explain.</p>
+        <p class="sub">A methodology to <b>organize agent skills</b> as a coherent system. Resolve <b>skill trigger conflicts</b>, decide <b>when to build a new skill</b>, and stop the failures that no single skill can explain.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="./guide.en.html">Read the methodology →</a>
           <a class="btn btn-ghost" href="./skill-authoring-guide.html">中文指南</a>
@@ -379,17 +379,17 @@
   <section class="install" id="install">
     <div class="wrap">
       <div class="s-head">
-        <h2>Apply it from inside Claude Code.</h2>
-        <p class="s-lede">One command. Then Claude applies these principles the moment you ask "should I build a new skill?" or "why is my agent behaving unpredictably?".</p>
+        <h2>Apply it from inside your agent.</h2>
+        <p class="s-lede">One command. Then your agent applies these principles the moment you ask "should I build a new skill?" or "why is my agent behaving unpredictably?". Works in Claude Code, Cursor, and any agent that reads <code>~/.claude/skills/</code>.</p>
       </div>
       <div class="copy-row">
         <pre class="codeblock" id="install-cmd"><span class="ps1">$</span> cp -r skill/ ~/.claude/skills/system-of-skills/
-<span class="c"># ask Claude:</span>
+<span class="c"># ask your agent:</span>
 <span class="ps1">&gt;</span> should I build a new skill, or merge into an existing one?
 <span class="ok">&#10003; system-of-skills loaded &middot; 6 principles active</span></pre>
         <button class="copy-btn" id="copy-btn" type="button" aria-label="Copy install command">Copy</button>
       </div>
-      <p class="install-note">Works with any Claude Code, Cursor, or compatible agent that reads <b>~/.claude/skills/</b>. No build step, no dependencies.</p>
+      <p class="install-note">No build step, no dependencies. The skill itself is plain Markdown.</p>
     </div>
   </section>
 
