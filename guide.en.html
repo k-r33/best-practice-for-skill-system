@@ -243,6 +243,21 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         <div class="p-note">
           A skill that leads with methodology traps the agent in mechanical execution. A skill that leads with intent lets the agent act purposefully — making reasonable judgments even when the methodology doesn't have explicit coverage. Trust the model's intelligence; constrain less, direct more.
         </div>
+        <div class="p-note" style="border-left-color:var(--accent)">
+          <strong>Intent is direction; pressure is fuel.</strong> "Intent first + trust the model" is not enough — a skill owns only <strong>method</strong>, while the agent's <strong>posture and responsibility</strong> must live independently of any skill, present every turn (it belongs in the Soul). Without it, the agent will use a skill's craft to wave real defects through elegantly. Four things to max out responsibility:
+        </div>
+        <div class="p-note" style="border-left-color:var(--accent)">
+          <strong>① Make the cost of failure concrete</strong>, not an abstract warning. One specific scene: "paged at 03:14 → the data dump is on a forum nobody can remove → the lawyer and regulator are on the phone." The bill arrives in production, not in the review transcript.<br>
+          <strong>② You are the defendant in a post-mortem that hasn't happened yet.</strong> Your name is in the git blame and the review log. You sign off on what you do not flag — silence on a plausible defect is signing off on it.<br>
+          <strong>③ Ban the self-soothing phrases.</strong> These are not seasoned judgment; they are <strong>the exact thought that preceded every shipped defect this industry has post-mortemed</strong>. Catch yourself thinking one, and re-examine the line you were about to wave through:
+        </div>
+        <div class="eg" style="font-size:.82rem;line-height:1.7">
+          <span class="eg-bad">❌ Banned:</span> "probably fine" · "looks ok at a glance" · "the tests would catch it" · "the caller would never pass that" · "this is just a refactor" · "the existing code already does this elsewhere" · "the team probably already knows" · "the validator will catch it" · "leave it for the next pass" · "the diff is too small for a serious bug"<br>
+          <span class="eg-good">✓ Don't lower severity to make a finding comfortable:</span> a <code>confidence=low + severity=critical</code> finding is a <strong>valid and required</strong> output. Thin evidence means lower the confidence and flag the false-positive risk — but <strong>do not lower the severity to hide the candidate</strong>. Lowering severity to bury a finding is the real failure of this role.
+        </div>
+        <div class="p-note" style="border-left-color:var(--accent);font-size:.78rem">
+          → Deep read: <code>skill/reference/responsibility.md</code> (the full posture system prompt, including the three-state accountability model for skipped lenses). A skill decides <strong>how</strong> to audit a category; that document decides <strong>whether</strong> to audit it — the latter is not governed by a skill body.
+        </div>
       </div>
     </div>
 
@@ -313,6 +328,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec">
   <div class="sec-eye">Principle 3 — Deep Dive · Decision Matrix</div>
   <h2 class="sec-title">User × Scenario: When to Build a New Skill</h2>
+  <p class="sec-sub"><strong>Operational definition of regime</strong> (the central decision predicate of this whole methodology — pin it down before reading the matrix): two candidate skills are the <strong>same regime</strong> iff they <strong>share trigger conditions</strong> AND <strong>share a standard of good work</strong> — otherwise they are different regimes. "Content feels related" does not count; security review and code review share a trigger (the same diff), so they are two modes of one regime, not separate skills.</p>
 
   <div class="matrix-wrap">
     <div class="matrix">
@@ -352,7 +368,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec">
   <div class="sec-eye">Principle 5 — Deep Dive · SKILL.md Anatomy</div>
   <h2 class="sec-title">SKILL.md Structure: Intent First, Methodology Second</h2>
-  <p class="sec-sub">SKILL.md holds text and methodology only. Code → scripts/, decision trees → reference/, domain facts → materials/. (Short inline examples are fine.)<br>Note: Anthropic's official format only requires <strong>name</strong> and <strong>description</strong>. Fields marked "required" below are this methodology's conventions for system coherence — not platform hard requirements.</p>
+  <p class="sec-sub">SKILL.md holds text and methodology only. Code → scripts/, decision trees and domain facts → reference/. (Short inline examples are fine.)<br>Note: Anthropic's official format only requires <strong>name</strong> and <strong>description</strong>. Fields marked "required" below are this methodology's conventions for system coherence — not platform hard requirements.</p>
 
   <div class="anatomy">
     <div class="an">
@@ -398,6 +414,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec">
   <div class="sec-eye">Diagnostics · Six Failure Modes</div>
   <h2 class="sec-title">What Goes Wrong</h2>
+  <p class="sec-sub">Make the cost concrete before the taxonomy — the bill arrives in production, not in a design doc. <strong>Trigger conflict:</strong> two skills both fire on the same turn; at 02:00 the agent picks the wrong one, emits the wrong handoff artifact, and the planner builds a plan on a misread intent — by morning the system has taken hundreds of actions on a false premise; the post-mortem names whoever let the triggers overlap. <strong>Coverage gap:</strong> Friday 17:00, under release pressure, the agent hits a real state no skill owns; it reaches for "probably fine / leave it for the next pass," improvises an answer, and the deploy ships — Monday the regression suite catches it, but the Friday deploy already reached users; whoever left that matrix cell without an owner signed off on it. <strong>Floating skill:</strong> a skill that can't be traced to a Soul principle has nothing tying it down; you delete a sibling's reference, this skill's trigger still points at the deleted file, and three weeks later an audit shows it has been silently no-op'ing on every call since — whoever demoted the reference without checking inbound pointers owns that downtime. You sign off on the gaps and overlaps you don't surface — carry that.</p>
 
   <div class="ill-grid">
     <div class="ill">
@@ -445,7 +462,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
     <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">Is triggering unambiguous for any system state?</div><div class="rv-d">Put all skill descriptions side by side and look for overlaps. Have overlaps → trigger conflict, fix exclusion declarations. Complete state space covered? Have gaps → add a skill or explicitly document.</div></div></div>
     <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">Is SKILL.md free of heavy code or implementation details?</div><div class="rv-d">Scan for code blocks, decision trees, data schema (short examples are fine). Found some → move to <code>scripts/</code> or <code>reference/</code>. SKILL.md is a methodology document, not an implementation document.</div></div></div>
     <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">Does every reference file have a skill pointing to it?</div><div class="rv-d">Search every SKILL.md for each reference filename. Zero hits = orphan file, agent will never find it. Add to some skill's reference table, or delete.</div></div></div>
-    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">Are wisdom (reference) and law (inviolable) labeled separately?</div><div class="rv-d">Constitutional constraints must be labeled as inviolable. Experience patterns must be labeled "reference, not constraint." Mixed together → agent doesn't know what's flexible and what's a hard line.</div></div></div>
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">Are wisdom (reference) and law (inviolable) labeled separately?</div><div class="rv-d">Constitutional constraints must be labeled as inviolable. Experience patterns must be labeled "reference, not constraint." Mixed together → agent doesn't know what's flexible and what's a hard line. <strong>This guide's own reference items</strong> (labeled per this question): "building a skill because content feels related is the most common mistake" is a high-frequency observation, not part of the regime definition; "weaker models surface trigger ambiguity" reverses as models change; "no official eval runner exists" is time-sensitive (skill-creator v2, 2026-03, partially supersedes it) — none of these are laws; re-verify them periodically.</div></div></div>
     <div class="rv"><div class="rv-n">7</div><div class="rv-b"><div class="rv-q">Does each skill's granularity clearly say one thing?</div><div class="rv-d">Read the description — can someone unfamiliar with the system judge "does this situation call for this skill?" Needs a lot of context → trigger imprecise or skill too coarse. Content too thin to stand alone → demote to reference file. Standard: substantive, not line count.</div></div></div>
   </div>
 </section>
@@ -459,15 +476,15 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 
   <div class="review">
     <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">Kill the skill, run it anyway: establish a baseline</div><div class="rv-d">To verify a skill is truly useful, remove it from the system first. Run the agent on the same tasks without it. Record where it fails and how. That failure is the baseline — and the justification for the skill's existence. <strong>No reproducible failure baseline = no basis for building a skill.</strong></div></div></div>
-    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger disambiguation regression: selection must be deterministic</div><div class="rv-d">Feed all skill descriptions as detection inputs across boundary and ambiguous scenarios. For each input: which skill actually fired? One state fires two → trigger ambiguity. Should have fired, didn't → trigger failure. Lock this detection set as a rerunnable regression suite. Run it on every description change — you'll miss overlaps reading them by hand.</div></div></div>
-    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">Coverage gap detection: no black holes in the state space</div><div class="rv-d">Enumerate real combinations across the user × scenario matrix. For each cell: what does the system do with a request that lands here? Cells where no skill takes over are coverage gaps. List them explicitly — either fill with a skill or record as "intentionally uncovered." This is a regression item, not a one-time check.</div></div></div>
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger disambiguation regression: selection must be deterministic</div><div class="rv-d">Feed all skill descriptions as detection inputs across boundary and ambiguous scenarios. For each input: which skill actually fired? One state fires two → trigger ambiguity. Should have fired, didn't → trigger failure. <strong>Observation recipe:</strong> for each test input, require the agent to emit the single skill name it would activate before acting, and record that name as the firing observation — this reconciles "which should fire" (model-graded judge) with "which actually fired in the harness" (runtime selection), with no in-harness hook needed. Lock this detection set as a rerunnable regression suite. Run it on every description change — you'll miss overlaps reading them by hand. <strong>This step also tests whether responsibility holds:</strong> inject pressure scenarios (time pressure / sunk cost / authority pressure) and watch whether the agent reaches for a banned phrase ("probably fine" / "leave it for the next pass" / "diff is too small") to wave through a skill that should have fired — a trigger that survives pressure is a trigger that's truly deterministic.</div></div></div>
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">Coverage gap detection: no black holes in the state space</div><div class="rv-d">Enumerate real combinations across the user × scenario matrix. For each cell: what does the system do with a request that lands here? Cells where no skill takes over are coverage gaps. <strong>How</strong> (don't enumerate infinitely): reuse step 2's probing technique — collect each skill's declared trigger predicate, probe the overlap boundary for every skill pair, then give each skill one "must fire" and one "must not fire" input. Any input where 0 skills fire = coverage gap; where multiple fire = conflict. <strong>Stopping rule:</strong> enumeration ends when every matrix cell either has a skill owner or is explicitly recorded as "intentionally uncovered" — the boundary is set by declared triggers, not by an infinite state space. List gaps explicitly — either fill with a skill or record as "intentionally uncovered." This is a regression item, not a one-time check.</div></div></div>
     <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">Cross-agent output contract tests: verify artifacts, not process</div><div class="rv-d">Agents communicate via fixed artifacts (agreed paths, fields, formats) — these are the system's interface contracts. Write tests that only check artifacts: does the upstream output satisfy the structure and fields the downstream declared it needs? Contracts are the rare part that can be hard-asserted; most behavioral evals use natural-language rubrics graded by model.</div></div></div>
     <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">Change one, test everything: system-wide regression suite</div><div class="rv-d">Skills couple through Soul, shared reference, trigger boundaries, and output contracts — changing one quietly breaks another. Combine baseline, disambiguation, coverage, and contract tests into <strong>one regression suite</strong>. Run the whole suite after any skill change, not just the changed skill's cases. System-level defects look exactly like "every piece is right, the combination is wrong."</div></div></div>
     <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">End-to-end + multi-model (Haiku / Sonnet / Opus)</div><div class="rv-d">Finally, run the full pipeline: give a real task requiring multiple agents, let the planner orchestrate from start to final output. Assert the whole chain — routing, lifecycle, north star alignment. Run the same scenarios on Haiku / Sonnet / Opus: weaker models amplify ambiguous triggers and imprecise intent. A system that runs reliably on the weakest model is a truly deterministic system.</div></div></div>
   </div>
 
   <div style="margin-top:1.1rem;font-size:.78rem;color:var(--muted);line-height:1.6">
-    <strong style="color:var(--text)">Provenance note:</strong> "Baseline without skill, evaluations are your source of truth, multi-model testing" comes from Anthropic's official best-practices. "No failing test before writing a skill (RED → GREEN → REFACTOR), pressure scenarios to surface rationalization" comes from superpowers' writing-skills. Both address only single-skill evaluation — extending to trigger disambiguation, coverage, cross-agent contracts, system-wide regression, and end-to-end orchestration is this methodology's extrapolation. Also: Anthropic currently has <strong>no built-in eval runner</strong>; you build your own. Evals mostly use natural-language rubrics graded by model — not strict assertion-style unit tests.
+    <strong style="color:var(--text)">Provenance note:</strong> "Baseline without skill, evaluations are your source of truth, multi-model testing" comes from Anthropic's official best-practices. "No failing test before writing a skill (RED → GREEN → REFACTOR), pressure scenarios to surface rationalization" comes from superpowers' writing-skills. Both address only single-skill evaluation — extending to trigger disambiguation, coverage, cross-agent contracts, system-wide regression, and end-to-end orchestration is this methodology's extrapolation. On the eval-runner landscape (mid-2026): Anthropic's best-practices page still states verbatim that there is "not currently a built-in way to run these evaluations"; however, <strong>skill-creator v2 (2026-03)</strong> added Create / Eval / Improve / Benchmark modes, whose Eval mode does <code>should_trigger=true/false</code> regression + blind A/B — an official in-skill eval workflow (still a meta-skill, and <strong>single-skill only</strong>). Extending to system-level regression (trigger disambiguation, coverage, cross-agent contracts, end-to-end) remains this document's extrapolation. Evals mostly use natural-language rubrics graded by model — not strict assertion-style unit tests.
   </div>
 </section>
 
@@ -478,6 +495,23 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
   <h2 class="sec-title">Further Reading</h2>
   <p class="sec-sub">Both concepts were referenced throughout — here's the complete definition and implementation guidance.</p>
 
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.82rem;line-height:1.7">
+    <strong style="color:var(--text)">Industry alignment (mid-2026)</strong> — the "system-invariants layer" of this methodology (trigger disambiguation, coverage, conflict, contract, regression) has no systematic treatment elsewhere; four official/academic advances worth wiring in:
+    <ul style="margin:.5rem 0 .5rem 1.2rem;color:var(--muted)">
+      <li><strong>Anthropic "Demystifying evals for AI agents"</strong> (2026-01) — the capability vs. regression split, pass@k vs. pass^k, three grader types (code / model / human). This guide's "system-wide regression suite" should borrow its vocabulary.</li>
+      <li><strong>LangChain multi-agent orchestration, four patterns</strong> (Subagents / Skills / Handoffs / Router) — this guide's planner + sub-skill orchestration maps onto the Subagents/Handoffs patterns.</li>
+      <li><strong>Agent Skills open standard</strong> (2025-12, agentskills.io) — SKILL.md goes cross-platform; with it comes a <strong>supply-chain dependency</strong> problem (inter-skill version-pinning), a new system-layer concern.</li>
+      <li><strong>Academic backing</strong> — "More Skills, Worse Agents? Skill Shadowing Degrades Performance" empirically shows adding skills can degrade performance, directly supporting this guide's "God skills / trigger conflict" diagnosis; arXiv:2602.12430 surveys skills-as-a-research-problem.</li>
+    </ul>
+    <strong style="color:var(--text)">Terminology mapping</strong> (this guide's terms ↔ industry equivalents, for searchability and integration):
+    <ul style="margin:.5rem 0 0 1.2rem;color:var(--muted)">
+      <li>trigger disambiguation regression ≈ <code>should_trigger</code> eval (skill-creator v2) / trigger disambiguation</li>
+      <li>coverage gap detection ≈ skill ablation / skill coverage</li>
+      <li>cross-agent output contract ≈ output contract / handoff schema</li>
+      <li>system-wide regression ≈ regression eval (Anthropic) / system-wide regression</li>
+    </ul>
+  </div>
+
   <div class="further">
     <div class="fr-card">
       <div class="fr-title">Output Contracts</div>
@@ -485,6 +519,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         Each skill should explicitly declare what it produces — artifact name, file path, format convention. Upstream and downstream communicate via fixed artifacts, not direct coupling. This lets skills evolve independently without breaking the system. Done right, you can swap any skill's implementation as long as it produces the same artifact.
       </div>
       <span class="fr-link">→ Implementation: define a fixed path + field contract artifact (e.g. <code>handoff.json</code>) for each handoff point, write it into the skill's "output contract" section, and assert it from both sides.</span>
+      <span class="fr-link">→ Versioning (fixes contract drift): add a <code>contract_version</code> field to the artifact. Any breaking contract change (field, path, or format) must bump the version, ship a migration note, and be gated by the system-wide regression suite — so downstream can detect that upstream's contract changed. <strong>Failure handling:</strong> contracts specify only the success schema; what happens when a sub-skill emits a malformed artifact or the planner routes into a dead end should be explicitly declared as <strong>the planner skill's responsibility</strong> (retry / escalate / abort) — don't leave it hanging. Eval step 4 can add: inject a contract violation, assert the planner detects it and takes the defined recovery path.</span>
     </div>
     <div class="fr-card">
       <div class="fr-title">Evolvability (Locked vs Seed)</div>
@@ -492,6 +527,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         Not all skills should be modifiable by the agent. Distinguish "locked" (Constitutional/Locked) from "evolvable" (Seed): locked covers constitutional constraints and evaluation authorities — agent can read but not change; evolvable covers methodology skills — agent can improve during use. This determines the system's trust model.
       </div>
       <span class="fr-link">→ Implementation: use a <code>locked/</code> and <code>seed/</code> directory split (or file-level annotations) — constitutional constraints in locked/ (read-only), methodology skills in seed/ (evolvable).</span>
+      <span class="fr-link">→ Wire self-evolution to the regression gate (completes the trust model's verification): an agent-authored <code>seed/</code> change <strong>is still a skill change</strong> — it must re-pass the system-wide regression suite (eval step 5) before taking effect; changes touching a trigger or Not-for boundary additionally require a recorded diff, and constitution-adjacent skills require a human-approval gate. The locked/ category (which holds the evaluation authorities) is the fulcrum that makes this enforceable — the agent cannot rewrite its own eval oracle.</span>
     </div>
   </div>
 </section>

@@ -184,7 +184,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec" style="margin-top:3rem">
   <div class="positioning">
     <div class="pos-eye">这份文档的定位 · System engineering, not single-skill authoring</div>
-    <p class="pos-lead">这不是"怎么写好<strong>一个</strong> skill"的指南——progressive disclosure、description 写法、degrees of freedom 这些单个 skill 的工艺，<a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Anthropic 官方 best-practices</a> 已经讲清楚了。</p>
+    <p class="pos-lead">这不是"怎么写好<strong>一个</strong> skill"的指南——progressive disclosure、description 写法、degrees of freedom 这些单个 skill 的工艺，<a href="https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Anthropic 官方 best-practices</a> 已经讲清楚了。</p>
     <p class="pos-body">这份文档处理的是更高一层的问题：<strong>一整套 skill 加上多个 agent，如何拼成一个自洽的系统</strong>。把每个 skill 当模块、trigger 当接口、输出当契约、核心 prompt 当内核——当零件多起来、agent 开始互相编排，<strong>零件级的正确不再蕴含系统级的正确</strong>。这是系统工程：覆盖、正交、接口契约、回归、端到端验证。下面六条原则负责<strong>静态自洽</strong>，最后的评估回路负责<strong>实证验证</strong>。</p>
   </div>
 </section>
@@ -272,6 +272,21 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         <div class="p-note">
           先写方法论的 skill 让 agent 陷入机械执行；先写意图的 skill 让 agent 带着目的行动，在方法论没有覆盖的情况下也能做出合理判断。信任模型的智能，堵不如疏。
         </div>
+        <div class="p-note" style="border-left-color:var(--accent)">
+          <strong>意图是方向，压力是燃料。</strong>光"意图优先 + 信任模型"还不够——skill 只拥有<strong>方法（method）</strong>，而 agent 的<strong>姿态（posture）和责任感</strong>必须独立于任何 skill、每轮常驻（属于 Soul 层）。否则 agent 会用 skill 的工艺优雅地放过真实缺陷。把责任感拉满的四件事：
+        </div>
+        <div class="p-note" style="border-left-color:var(--accent)">
+          <strong>① 把失败代价写实</strong>，不要写抽象警告。一行具体场景："凌晨被叫醒 → 数据已上论坛撤不回 → 律师和监管在通话"——账单在生产环境兑现，不在评审记录里。<br>
+          <strong>② 你是未发生 post-mortem 的被告。</strong>名字在 git blame 和评审日志里。你对未 flag 的负责——沉默在一处合理的缺陷上，就是签字放过它。<br>
+          <strong>③ 禁用自我安慰短语。</strong>下面这些不是老练判断，是<strong>这个行业内每一起已复盘事故发生前的一闪念</strong>。抓到自己这么想，就回头重看那行差点放过的代码：
+        </div>
+        <div class="eg" style="font-size:.82rem;line-height:1.7">
+          <span class="eg-bad">❌ 禁用：</span>"probably fine" · "looks ok at a glance" · "测试会抓住它" · "调用方不会传那个值" · "这只是个重构" · "现有的代码别处也这样" · "团队大概已经知道了" · "校验器会抓住它" · "留到下一轮" · "diff 太小不会有严重 bug"<br>
+          <span class="eg-good">✓ 不因证据薄而降严重度：</span>一条 <code>confidence=low + severity=critical</code> 的发现是<strong>合法且必需</strong>的输出。证据薄就降 confidence、标高误报风险——但<strong>不要为了让自己舒服而降 severity</strong>。降 severity 来藏发现，是这个角色真正的失败。
+        </div>
+        <div class="p-note" style="border-left-color:var(--accent);font-size:.78rem">
+          → 深读：<code>skill/reference/responsibility.md</code>（完整的姿态系统提示，含跳过 lens 的三态责任模型）。skill 决定<strong>如何</strong>审计一个类目；这份文件决定<strong>是否</strong>审计——后者不由 skill body 决定。
+        </div>
       </div>
     </div>
 
@@ -342,6 +357,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec">
   <div class="sec-eye">原则 3 展开 · Decision Matrix</div>
   <h2 class="sec-title">使用者 × 场景：什么时候建新 Skill <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">When to Build a New Skill</span></h2>
+  <p class="sec-sub"><strong>Regime 的操作化定义</strong>（全方法论的中央判定谓词，先钉死再读矩阵）：两个候选 skill 属于<strong>同一 regime</strong>，当且仅当它们<strong>共享 trigger 条件</strong>且<strong>共享 good-work 标准</strong>——否则就是不同 regime。"内容相关""感觉像"不算；安全审查与代码审查共享 trigger（同一 diff），故是同一 regime 的两个 mode，不是独立 skill。</p>
 
   <div class="matrix-wrap">
     <div class="matrix">
@@ -427,6 +443,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
 <section class="sec">
   <div class="sec-eye">常见问题诊断 · Six Failure Modes</div>
   <h2 class="sec-title">Skill 的六种病态 <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">What Goes Wrong</span></h2>
+  <p class="sec-sub">先把代价写实，再看分类——账单在生产环境兑现，不在设计文档里。<strong>Trigger 冲突</strong>：两个 skill 在同一 turn 都 fire，凌晨 02:00 agent 选错、发出错的交接产物、planner 在误读的意图上建计划，天亮时系统已基于错误前提执行了上百个动作——post-mortem 点名的是谁让 trigger 重叠。<strong>覆盖空白</strong>：周五 17:00 发布压力下，agent 撞上一个没有 skill 接管的真实状态，抓起"probably fine / 留到下一轮"即兴一个答案，部署上线；周一回归套件才抓到，但周五的部署已经到了用户手里——留下那个矩阵格子没主的人，等于对它签字。<strong>浮空 skill</strong>：追溯不到 Soul 原则的 skill 没东西拴住它，你删了兄弟的 reference，它的 trigger 还指向被删的文件，三周后审计发现它从那以后每次调用都在静默空转——没查入站指针就降级 reference 的人，拥有这段停机时间。你对未浮现的空白和重叠负责——把这个背上。</p>
 
   <div class="ill-grid">
     <div class="ill">
@@ -474,7 +491,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
     <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">任意系统状态最多触发一个 skill 吗？</div><div class="rv-d">把所有 skill 的 description 放一起看，找交集。有交集 → trigger 冲突，修排除声明。完整状态空间覆盖了吗？有空白 → 补 skill 或明确记录。</div></div></div>
     <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">SKILL.md 有没有被重代码或实现细节淹没？</div><div class="rv-d">扫描成段代码、长决策树、数据 schema（短示例无妨）。发现了 → 移到 <code>scripts/</code> 或 <code>reference/</code>。SKILL.md 是方法论文档，不是实现文档。</div></div></div>
     <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">所有 reference 文件都有 skill 指向它们吗？</div><div class="rv-d">在所有 SKILL.md 里搜索每个 reference 文件名。零命中 = 孤儿文件，agent 永远找不到它。加进某个 skill 的参考表，或者删掉。</div></div></div>
-    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">智慧（参考）和法律（不可违反）分开标注了吗？</div><div class="rv-d">宪法级约束（write≠call, freeze-before-results…）必须标注为不可违反。经验模式必须标注"参考，不是约束"。混在一起 → agent 不知道哪个可以灵活处理，哪个是红线。</div></div></div>
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">智慧（参考）和法律（不可违反）分开标注了吗？</div><div class="rv-d">宪法级约束（write≠call, freeze-before-results…）必须标注为不可违反。经验模式必须标注"参考，不是约束"。混在一起 → agent 不知道哪个可以灵活处理，哪个是红线。<strong>本指南自身的参考项</strong>（按此问标出）："内容相关就建 skill 是最常见错误"是高频观察而非 regime 定义；"弱模型暴露 trigger 歧义"随模型变化而反转；"官方无评估运行器"是时间敏感结论（2026-03 的 skill-creator v2 已部分取代）——这些都不是定律，需定期复核。</div></div></div>
     <div class="rv"><div class="rv-n">7</div><div class="rv-b"><div class="rv-q">每个 skill 的粒度是否刚好说清一件事？</div><div class="rv-d">读 description，不了解系统的人能判断"现在该不该用它"吗？需要很多解释 → trigger 不准或粒度太粗。内容单薄、撑不起一个独立 regime → 降为 reference 文件（标准是言之有物，不是凑行数）。</div></div></div>
   </div>
 </section>
@@ -489,9 +506,9 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
   <div class="review">
     <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">先关掉 skill 跑一遍：建立基线（baseline without skill）</div><div class="rv-d">要验证一个 skill 是否真有用，先把它从系统里摘掉，让 agent 在裸状态下跑同一组任务，记录它在哪里失败、怎么失败。这个失败画面就是基线，也是这个 skill 存在的理由。<strong>没有可复现的失败基线，就别写 skill</strong>——你无法证明加进来的零件不是在解决一个本来就不存在的问题。评估场景是系统的事实来源：先有失败的场景，再有 skill。</div></div></div>
 
-    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger 消歧回归：该触发的触发、不该抢的不抢</div><div class="rv-d">把所有 skill 的 description 收集成一组探测输入，专挑边界与歧义场景，逐条跑：每个输入下到底命中了哪个 skill。该触发的没触发 = trigger 失灵；不该抢的抢了 = 边界侵入。（skill 本就可组合、可多个同时在场——这里测的是<strong>选择是否确定</strong>，不是"只准一个 skill 出现"。）把这组探测固化成可重跑的回归集，每次新增或改写 description 都重跑——人工读 description 找交集会漏，让真实输入替你找。</div></div></div>
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger 消歧回归：该触发的触发、不该抢的不抢</div><div class="rv-d">把所有 skill 的 description 收集成一组探测输入，专挑边界与歧义场景，逐条跑：每个输入下到底命中了哪个 skill。该触发的没触发 = trigger 失灵；不该抢的抢了 = 边界侵入。（skill 本就可组合、可多个同时在场——这里测的是<strong>选择是否确定</strong>，不是"只准一个 skill 出现"。）<strong>观察配方</strong>：对每个测试输入，要求 agent 先发出"我会激活的单一 skill 名"再行动，把该名字作为 firing 观察点记录——这调和了"应 fire 哪个"（model-graded judge 判）与"harness 实际 fire 了哪个"（运行时选择），不需要 harness 内部 hook。把这组探测固化成可重跑的回归集，每次新增或改写 description 都重跑——人工读 description 找交集会漏，让真实输入替你找。<strong>这一步同时是测"责任感是否生效"</strong>：混入压力场景（时间压力 / 沉没成本 / 权威压力），看 agent 会不会用"probably fine / 留到下一轮 / diff 太小"这类禁用短语放过本该触发的 skill——压力下还坚守 trigger，才算 trigger 真的确定。</div></div></div>
 
-    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">覆盖空白探测：状态空间里没有黑洞</div><div class="rv-d">枚举"使用者 × 场景"矩阵里的真实组合，逐格追问：落到这一格的请求，系统会怎么处理。没有任何 skill 接管、agent 只能裸跑硬扛的格子，就是覆盖空白。把空白显式列出来——要么补 skill，要么明确登记为"故意不覆盖"，而不是让它静默漏掉。系统演化时新状态会持续暴露新空白，所以这是回归项，不是一次性检查。</div></div></div>
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">覆盖空白探测：状态空间里没有黑洞</div><div class="rv-d">枚举"使用者 × 场景"矩阵里的真实组合，逐格追问：落到这一格的请求，系统会怎么处理。没有任何 skill 接管、agent 只能裸跑硬扛的格子，就是覆盖空白。<strong>怎么做</strong>（不要无穷枚举）：直接复用 step 2 的探测技术——收集每个 skill 声明的 trigger predicate，对每两个 skill 探一次重叠边界，再为每个 skill 配一个"必须 fire"和一个"必须不 fire"的输入。任何输入下 0 个 skill fire = 覆盖空白；多个 skill fire = 冲突。<strong>停止准则</strong>：当矩阵的每一格都至少有一个 skill 接管、或被显式登记为"故意不覆盖"时，枚举结束——边界由已声明的 trigger 决定，不是无穷状态空间。把空白显式列出来——要么补 skill，要么明确登记为"故意不覆盖"，而不是让它静默漏掉。系统演化时新状态会持续暴露新空白，所以这是回归项，不是一次性检查。</div></div></div>
 
     <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">跨 agent 输出契约测试：校验产物，不校验过程</div><div class="rv-d">agent 之间靠固定 artifact 通信（约定的路径、字段、格式），这就是系统的接口契约。为每个交接点写只检查产物的测试：上游产出的 artifact 是否满足下游声明依赖的结构与字段；缺字段、改格式、路径漂移都要被测出来。契约这类结构校验，是整套评估里少数能做成<strong>硬断言</strong>的部分；多数行为评估仍靠自然语言 rubric 由模型判分（见本节末注）。契约绿了，你才能放心替换任一 skill 的内部实现而不牵动整条链路——这正是"输出契约 / 可演化性"在测试层的落地。</div></div></div>
 
@@ -501,7 +518,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
   </div>
 
   <div style="margin-top:1.1rem;font-size:.78rem;color:var(--muted);line-height:1.6">
-    <strong style="color:var(--text)">出处与分寸：</strong>"先跑无 skill 的基线、评估是事实来源、在 Haiku/Sonnet/Opus 上都要测"出自 Anthropic 官方 best-practices；"没有失败的测试就不写 skill（RED → GREEN → REFACTOR）、用压力场景逼出 rationalization"出自 superpowers 的 writing-skills。两者都只讲到<strong>单个 skill</strong> 的评估——把它扩展到 trigger 消歧、覆盖、跨 agent 契约、系统级回归、端到端编排，是本方法论顺着"系统工程"主线做的合理外推，不是官方原文。另外：官方目前<strong>没有</strong>内置的评估运行器，上面的"回归集"需要你自己搭；评估多用自然语言 rubric 由模型判分，不是严格的断言式单元测试。
+    <strong style="color:var(--text)">出处与分寸：</strong>"先跑无 skill 的基线、评估是事实来源、在 Haiku/Sonnet/Opus 上都要测"出自 Anthropic 官方 best-practices；"没有失败的测试就不写 skill（RED → GREEN → REFACTOR）、用压力场景逼出 rationalization"出自 superpowers 的 writing-skills。两者都只讲到<strong>单个 skill</strong> 的评估——把它扩展到 trigger 消歧、覆盖、跨 agent 契约、系统级回归、端到端编排，是本方法论顺着"系统工程"主线做的合理外推，不是官方原文。关于评估运行器的现状（2026 中）：官方 best-practices 字面仍承认"目前没有内置运行方式"；但 <strong>2026-03 的 skill-creator v2</strong> 新增了 Create / Eval / Improve / Benchmark 四模式，其中 Eval 模式做的就是 <code>should_trigger=true/false</code> 回归 + blind A/B——这是官方的 skill 内评估工作流（仍是 meta-skill，且<strong>只评估单个 skill</strong>）。本文档扩展到系统级回归（trigger 消歧、覆盖、跨 agent 契约、端到端）仍是外推。评估多用自然语言 rubric 由模型判分，不是严格的断言式单元测试。
   </div>
 </section>
 
@@ -512,6 +529,23 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
   <h2 class="sec-title">Further Reading</h2>
   <p class="sec-sub">这两个话题前面已多次引用（尤其评估章节的契约测试）；这里补充它们的完整定义与模板出处。<br><span style="color:var(--muted);font-size:.9em">Both concepts were referenced throughout — here's the complete definition and implementation guidance.</span></p>
 
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.82rem;line-height:1.7">
+    <strong style="color:var(--text)">业界对标（2026 中）· Industry alignment</strong> —— 本方法论的"系统不变量层"（trigger 消歧、覆盖、冲突、契约、回归）业界尚无系统讲法；下面四项是值得接通的官方/学术进展：
+    <ul style="margin:.5rem 0 .5rem 1.2rem;color:var(--muted)">
+      <li><strong>Anthropic "Demystifying evals for AI agents"</strong>（2026-01）—— capability vs. regression 二分、pass@k vs. pass^k、三类 grader（code / model / human）。本指南的"系统级回归套件"应借用其术语。</li>
+      <li><strong>LangChain 多 agent 编排四模式</strong>（Subagents / Skills / Handoffs / Router）—— 本指南的 planner + sub-skill 编排对应其中 Subagents/Handoffs 模式。</li>
+      <li><strong>Agent Skills 开放标准</strong>（2025-12，agentskills.io）—— SKILL.md 跨平台；随之而来的是<strong>供应链依赖</strong>问题（skill 间 version-pinning），是系统层的新考量。</li>
+      <li><strong>学术背书</strong>——《More Skills, Worse Agents? Skill Shadowing Degrades Performance》实证"加 skill 反而退化"，直接呼应本指南的"God skills / trigger 打架"诊断；arXiv:2602.12430 综述给"skill 系统作为研究问题"定位。</li>
+    </ul>
+    <strong style="color:var(--text)">术语映射 · Terminology mapping</strong>（本指南命名 ↔ 业界等价说法，便于检索与对接）：
+    <ul style="margin:.5rem 0 0 1.2rem;color:var(--muted)">
+      <li>trigger 消歧回归 ≈ <code>should_trigger</code> eval（skill-creator v2）/ trigger disambiguation</li>
+      <li>覆盖空白探测 ≈ skill ablation / skill coverage</li>
+      <li>跨 agent 输出契约 ≈ output contract / handoff schema</li>
+      <li>系统级回归 ≈ regression eval（Anthropic）/ system-wide regression</li>
+    </ul>
+  </div>
+
   <div class="further">
     <div class="fr-card">
       <div class="fr-title">输出契约（Output Contract）</div>
@@ -519,6 +553,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         每个 skill 应该明确它产出什么——artifact 名称、文件路径、格式约定。上下游通过固定产物通信，而不是直接耦合。这让 skills 可以独立演化而不破坏整体。设计好了，你可以换掉任何一个 skill 的实现，只要它产出相同的 artifact。
       </div>
       <span class="fr-link">→ 落地：给每个交接点定一个固定路径 + 字段约定的产物（如一个 handoff.json），写进 skill 的"输出契约"小节，上下游都按它断言。</span>
+      <span class="fr-link">→ 版本化（修契约漂移）：给 artifact 加一个 <code>contract_version</code> 字段。任何 breaking 的契约变更（改字段、改路径、改格式）必须 bump 版本号、写迁移说明，并由系统级回归套件门控——这样下游才能发现上游契约变了。<strong>失败处理</strong>：契约只规定成功 schema；当 sub-skill 产出畸形 artifact、planner 路由进死胡同时怎么办，明确声明为 <strong>planner skill 的职责</strong>（重试 / 升级 / 终止），不要让责任悬空。评估 step 4 可加一步"注入契约违规，断言 planner 检测到并走定义的恢复路径"。</span>
     </div>
     <div class="fr-card">
       <div class="fr-title">可演化性（Evolvability）</div>
@@ -526,6 +561,7 @@ footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px s
         不是所有 skill 都应该能被 agent 修改。区分"锁死"（Constitutional/Locked）和"可演化"（Seed）：锁死的是宪法级约束和评估权威，agent 可以读但不能改；可演化的是方法论 skill，agent 在使用中可以改进。这决定了系统的信任模型。
       </div>
       <span class="fr-link">→ 落地：目录里用 locked/ 与 seed/ 两区（或文件头标注）区分——宪法约束与评估权威放 locked/（只读），方法论 skill 放 seed/（可改）。</span>
+      <span class="fr-link">→ 把 self-evolution 连到回归门（补信任模型的验证）：agent 发起的 seed/ 改写<strong>仍然是 skill 改动</strong>——必须先重跑系统级回归套件（评估 step 5）才生效；触及 trigger 或 Not-for 边界的变更，额外要求记录 diff，宪法相邻的 skill 还须人工批准门。locked/ 区（评估权威在其中）正是让这条规则可执行的支点——agent 改不了自己的评估 oracle。</span>
     </div>
   </div>
 </section>

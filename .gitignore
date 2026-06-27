@@ -1,0 +1,9 @@
+# Claude Code local config and third-party skills (not part of this methodology repo)
+.claude/
+skills-lock.json
+
+# Local source drafts not for publication
+reviewer-responsibility.md
+
+# macOS
+.DS_Store

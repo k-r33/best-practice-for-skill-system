@@ -3,37 +3,438 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System of Skills</title>
+<title>Organize Claude Code Skills as a System: Stop Skill Trigger Conflicts</title>
+<meta name="description" content="How to organize Claude Code skills as a system. Six principles to stop skill trigger conflicts and decide when to build a new skill.">
+<meta name="keywords" content="claude code skills, organize agent skills, skill trigger conflict, when to build a new skill, agent skills best practices 2026, multi-skill system, claude skills architecture">
+<meta name="author" content="System of Skills">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#15151A">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Organize Claude Code Skills as a System">
+<meta property="og:description" content="Anthropic teaches how to write one skill. This is the missing layer: how to architect the whole collection and stop skills fighting each other.">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:url" content="https://k-r33.github.io/best-practice-for-skill-system/">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Organize Claude Code Skills as a System">
+<meta name="twitter:description" content="Six principles for the whole skill collection. The systems layer Anthropic's single-skill docs do not cover.">
+
+<link rel="canonical" href="https://k-r33.github.io/best-practice-for-skill-system/">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Organize Claude Code Skills as a System",
+  "description": "A systems-engineering methodology for designing a collection of agent skills as a coherent whole. Six principles plus an empirical eval loop.",
+  "author": { "@type": "Organization", "name": "System of Skills" },
+  "publisher": { "@type": "Organization", "name": "System of Skills" },
+  "proficiencyLevel": "Advanced",
+  "datePublished": "2026-06-27",
+  "dateModified": "2026-06-27",
+  "inLanguage": "en",
+  "keywords": "claude code skills, organize agent skills, skill trigger conflict, when to build a new skill, multi-skill system",
+  "mainEntityOfPage": "https://k-r33.github.io/best-practice-for-skill-system/",
+  "about": {
+    "@type": "Thing",
+    "name": "Agent skill system architecture"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "system-of-skills",
+  "description": "A methodology skill that teaches Claude how to architect a collection of agent skills as a coherent system.",
+  "codeRepository": "https://github.com/k-r33/best-practice-for-skill-system",
+  "programmingLanguage": "Markdown",
+  "runtimePlatform": "Claude Code",
+  "targetProduct": {
+    "@type": "SoftwareApplication",
+    "name": "Claude Code",
+    "applicationCategory": "DeveloperApplication"
+  },
+  "license": "https://opensource.org/licenses/MIT",
+  "author": { "@type": "Organization", "name": "System of Skills" }
+}
+</script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#F2F0ED;color:#17171A;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
-.card{background:#fff;border:1px solid #D6D2CC;border-radius:6px;padding:3rem 3.5rem;max-width:520px;width:100%;text-align:center}
-.eye{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:#BF3A0D;font-weight:700;margin-bottom:1.2rem}
-h1{font-family:Georgia,serif;font-size:1.9rem;font-weight:normal;line-height:1.25;margin-bottom:1rem}
-h1 em{font-style:normal;color:#BF3A0D}
-p{font-size:.88rem;color:#6B7280;line-height:1.65;margin-bottom:2rem}
-.links{display:flex;flex-direction:column;gap:.7rem}
-a.btn{display:block;padding:.85rem 1.5rem;border-radius:4px;text-decoration:none;font-size:.88rem;font-weight:600;transition:opacity .15s}
-a.btn-primary{background:#17171A;color:#fff}
-a.btn-secondary{background:transparent;border:1px solid #D6D2CC;color:#17171A}
-a.btn:hover{opacity:.8}
-.note{margin-top:1.8rem;font-size:.73rem;color:#9CA3AF}
-.note a{color:#2B659A;text-decoration:none}
+  :root{
+    --bg:#F4F1EC; --surface:#FBF9F5; --ink:#15151A; --ink-soft:#4A4A52; --ink-faint:#7A7A83;
+    --rule:#E0DBD1; --accent:#B8350D; --accent-tint:rgba(184,53,13,.08);
+    --code-bg:#15151A; --code-ink:#EDEAE2; --code-accent:#FF8A4C;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:17px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:inherit}
+  ::selection{background:var(--accent);color:#fff}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  section{padding:88px 0}
+  @media(max-width:640px){section{padding:56px 0}body{font-size:16px}}
+  .top{position:sticky;top:0;z-index:20;background:rgba(244,241,236,.86);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--rule)}
+  .top-inner{display:flex;align-items:center;justify-content:space-between;height:56px}
+  .brand{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:9px}
+  .brand-dot{width:9px;height:9px;background:var(--accent);border-radius:1px}
+  .top-nav{display:flex;gap:22px;align-items:center}
+  .top-nav a{font-size:14px;color:var(--ink-soft);text-decoration:none;font-weight:500}
+  .top-nav a:hover{color:var(--accent)}
+  .star{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);text-decoration:none}
+  .star:hover{border-color:var(--ink)}
+  @media(max-width:640px){.top-nav a:not(.star){display:none}}
+
+  /* HERO */
+  .hero{padding-top:64px;padding-bottom:72px;border-bottom:1px solid var(--rule)}
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:34px;align-items:start}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block}
+  h1.lead{font-size:clamp(36px,6.6vw,66px);line-height:1.03;letter-spacing:-.028em;font-weight:800;margin-top:8px}
+  h1.lead .stop{color:var(--accent)}
+  h1.lead .strike{position:relative;color:var(--ink-faint);white-space:nowrap}
+  h1.lead .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:.12em;background:var(--accent);transform:rotate(-2deg)}
+  .sub{font-size:clamp(17px,2vw,20px);color:var(--ink-soft);max-width:48ch;line-height:1.5;margin-top:14px}
+  .sub b{color:var(--ink);font-weight:650}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:7px;font-size:15px;font-weight:600;text-decoration:none;transition:transform .12s ease,background .15s ease,border-color .15s ease;border:1px solid transparent}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:#9c2c09}
+  .btn-ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .meta-line{font-family:var(--mono);font-size:13px;color:var(--ink-faint);margin-top:12px}
+  .meta-line b{color:var(--ink-soft);font-weight:600}
+
+  /* SYSTEM-STATE DIAGRAM */
+  .diagram{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:24px;box-shadow:0 1px 0 rgba(0,0,0,.03),0 18px 40px -26px rgba(21,21,26,.30)}
+  .diagram-cap{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .diagram-cap .tag{color:var(--accent);font-weight:700}
+  .nodes{display:grid;grid-template-columns:1fr;gap:10px}
+  .node{border:1px solid var(--rule);border-radius:8px;padding:12px 14px;background:#fff;display:flex;flex-direction:column;gap:3px}
+  .node .nm{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink)}
+  .node .tr{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+  .node .state{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+  .node.fire{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:#fff}
+  .node.fire .nm{color:var(--accent)}
+  .node.fire .state{color:var(--accent);font-weight:700}
+  .node.gap{border:1px dashed var(--ink-faint);background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(0,0,0,.015) 8px,rgba(0,0,0,.015) 16px)}
+  .node.gap .nm{color:var(--ink-faint)}
+  .diagram-foot{margin-top:16px;padding-top:14px;border-top:1px dashed var(--rule);font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .diagram-foot b{color:var(--ink)}
+  @media(min-width:520px){.nodes{grid-template-columns:1fr 1fr}}
+  @media(min-width:900px){
+    .hero-grid{grid-template-columns:1.04fr .96fr;gap:52px;align-items:center}
+    .hero{padding-top:88px;padding-bottom:100px}
+  }
+
+  /* SECTION HEADS */
+  .s-head{margin-bottom:42px;max-width:64ch}
+  .s-head .eyebrow{margin-bottom:14px}
+  h2{font-size:clamp(27px,4vw,40px);line-height:1.09;letter-spacing:-.022em;font-weight:800}
+  h2 .stop{color:var(--accent)}
+  .s-lede{font-size:18px;color:var(--ink-soft);margin-top:14px;line-height:1.55}
+
+  /* SYMPTOM GRID */
+  .pain{background:var(--surface);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .syms{display:grid;grid-template-columns:1fr;gap:14px;margin-top:34px}
+  .sym{border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;padding:20px 22px;background:#fff}
+  .sym .sym-tag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:block}
+  .sym p{font-size:16.5px;line-height:1.5;color:var(--ink);font-weight:500}
+  @media(min-width:760px){.syms{grid-template-columns:1fr 1fr}}
+  .sym-note{margin-top:24px;font-size:14px;color:var(--ink-faint);line-height:1.55;max-width:70ch}
+  .sym-note a{color:var(--accent);font-weight:600;text-decoration:none;border-bottom:1px solid var(--rule)}
+  .sym-note a:hover{border-color:var(--accent)}
+
+  /* THEM VS US */
+  .gap-row{display:grid;grid-template-columns:1fr;gap:16px;margin-top:34px;align-items:stretch}
+  .gap-card{border:1px solid var(--rule);border-radius:10px;padding:28px 26px;background:var(--surface)}
+  .gap-card h3{font-size:14px;font-weight:700;margin-bottom:10px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase}
+  .gap-card p{font-size:16px;color:var(--ink-soft);line-height:1.6}
+  .gap-card.is-them h3{color:var(--ink-faint)}
+  .gap-card.is-them{background:#fff}
+  .gap-card.is-us{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:var(--accent-tint)}
+  .gap-card.is-us h3{color:var(--accent)}
+  .gap-arrow-v{text-align:center;font-family:var(--mono);color:var(--accent);font-size:22px;font-weight:700;padding:2px 0}
+  .gap-arrow-h{display:none}
+  @media(min-width:760px){
+    .gap-row{grid-template-columns:1fr auto 1fr;gap:0}
+    .gap-arrow-v{display:none}
+    .gap-arrow-h{display:flex !important;align-items:center;justify-content:center;font-family:var(--mono);color:var(--accent);font-size:22px;padding:0 18px;font-weight:700}
+  }
+
+  /* MAPPING TABLE */
+  .map-wrap{margin-top:34px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface)}
+  .map-table{width:100%;border-collapse:collapse;font-size:15px}
+  .map-table th,.map-table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+  .map-table tr:last-child td{border-bottom:none}
+  .map-table thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;background:#fff}
+  .map-table td .k{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:14px;display:block;margin-bottom:3px}
+  .map-table td .v{color:var(--ink-soft);line-height:1.5}
+  .map-cap{font-family:var(--mono);font-size:13px;color:var(--ink-faint);margin-top:16px}
+
+  /* PRINCIPLES */
+  .princ-grid{display:grid;grid-template-columns:1fr;gap:0;margin-top:34px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface)}
+  .pitem{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:22px 24px;border-bottom:1px solid var(--rule);align-items:start}
+  .pitem:last-child{border-bottom:none}
+  .pnum{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);padding-top:3px}
+  .pitem h3{font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .pitem p{font-size:15px;color:var(--ink-soft);margin-top:4px;line-height:1.5}
+  @media(min-width:820px){
+    .princ-grid{grid-template-columns:1fr 1fr}
+    .pitem:nth-child(odd){border-right:1px solid var(--rule)}
+    .pitem:nth-last-child(-n+2){border-bottom:none}
+  }
+  .eval-band{margin-top:22px;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:22px 26px;display:grid;grid-template-columns:1fr;gap:6px}
+  @media(min-width:640px){.eval-band{grid-template-columns:auto 1fr;gap:22px;align-items:center}}
+  .eval-band .eb-tag{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--code-accent);font-weight:700}
+  .eval-band .eb-body{font-size:15.5px;line-height:1.55;color:#cfcdc5}
+  .eval-band .eb-body b{color:#fff}
+
+  /* INSTALL */
+  .install{background:var(--code-bg);color:var(--code-ink)}
+  .install .eyebrow{color:var(--code-accent)}
+  .install .eyebrow::before{background:var(--code-accent)}
+  .install h2{color:#fff}
+  .install .s-lede{color:#b8b8c0}
+  .install .s-head{max-width:62ch}
+  .copy-row{display:flex;gap:10px;align-items:stretch;margin-top:30px;flex-wrap:wrap}
+  .codeblock{flex:1 1 100%;background:#0e0e12;border:1px solid #2a2a31;border-radius:8px;padding:16px 18px;font-family:var(--mono);font-size:14px;line-height:1.7;color:var(--code-ink);overflow-x:auto;white-space:pre;min-width:0}
+  @media(min-width:640px){.codeblock{flex:1 1 auto}}
+  .codeblock .ps1{color:var(--code-accent)}
+  .codeblock .c{color:#6b6b74}
+  .codeblock .ok{color:#7FB37A}
+  .copy-btn{flex:0 0 auto;background:#1c1c22;border:1px solid #2a2a31;color:var(--code-ink);font-family:var(--mono);font-size:13px;font-weight:600;padding:0 18px;border-radius:8px;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+  .copy-btn:hover{background:#26262d;border-color:var(--code-accent)}
+  .copy-btn.copied{background:rgba(127,179,122,.18);border-color:#7FB37A;color:#7FB37A}
+  .install-note{margin-top:18px;font-family:var(--mono);font-size:13px;color:#8a8a92}
+  .install-note b{color:#cfcfd6}
+  .install .meta-line{color:#8a8a92}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--rule);padding:44px 0 56px;background:var(--bg)}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .foot-left{font-family:var(--mono);font-size:13px;color:var(--ink-faint)}
+  .foot-left b{color:var(--ink)}
+  .foot-links{display:flex;gap:22px;flex-wrap:wrap}
+  .foot-links a{font-size:14px;color:var(--ink-soft);text-decoration:none;font-weight:500}
+  .foot-links a:hover{color:var(--accent)}
+  .foot-lic{width:100%;margin-top:18px;padding-top:18px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#101014;--surface:#17171c;--ink:#ECEAE3;--ink-soft:#B5B3AC;--ink-faint:#7c7c85;--rule:#26262d;--accent:#FF6A33;--accent-tint:rgba(255,106,51,.12)}
+    body{background:var(--bg)}
+    .top{background:rgba(16,16,20,.86)}
+    .sym{background:#1c1c22}
+    .gap-card.is-them{background:#1c1c22}
+    .gap-card.is-us{background:var(--accent-tint)}
+    .node{background:#1c1c22}
+    .node.fire{background:#1c1c22}
+    .map-table thead th{background:#1c1c22}
+    .map-wrap{background:var(--surface)}
+    .map-table td .v{color:var(--ink-soft)}
+  }
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="eye">System of Skills · 系统工程方法论</div>
-  <h1>Designing a skill collection<br>as a <em>coherent system</em></h1>
-  <p>Ten well-written skills — and they're starting to fight each other. This is the missing layer: system design for agent skill collections, not just how to write one.</p>
-  <div class="links">
-    <a class="btn btn-primary" href="./guide.en.html">Read the Guide — English</a>
-    <a class="btn btn-secondary" href="./skill-authoring-guide.html">读指南——中文</a>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="./index.html"><span class="brand-dot"></span>system-of-skills</a>
+    <nav class="top-nav">
+      <a href="#problem">The Problem</a>
+      <a href="#principles">Principles</a>
+      <a href="#install">Install</a>
+      <a class="star" href="https://github.com/k-r33/best-practice-for-skill-system">★ Star</a>
+    </nav>
   </div>
-  <div class="note">
-    Install the Claude Code skill: <code>cp -r skill/ ~/.claude/skills/system-of-skills/</code><br>
-    <a href="https://github.com/k-r33/best-practice-for-skill-system">GitHub Repo</a>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">The systems layer for agent skills</div>
+        <h1 class="lead">
+          <span class="strike">Writing one skill</span> is easy.<br>
+          Organizing ten<br>
+          is where agents <span class="stop">break</span>.
+        </h1>
+        <p class="sub">A methodology to <b>organize Claude Code skills</b> as a coherent system. Resolve <b>skill trigger conflicts</b>, decide <b>when to build a new skill</b>, and stop the failures that no single skill can explain.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="./guide.en.html">Read the methodology →</a>
+          <a class="btn btn-ghost" href="./skill-authoring-guide.html">中文指南</a>
+        </div>
+        <p class="meta-line">v2026 · <b>6 principles</b> · <b>1 eval loop</b> · MIT</p>
+      </div>
+
+      <div class="diagram" aria-label="System state diagram: two skills firing in conflict, one request with no owner">
+        <div class="diagram-cap"><span>system state · one turn</span><span class="tag">conflict detected</span></div>
+        <div class="nodes">
+          <div class="node fire">
+            <span class="nm">commit-workflow</span>
+            <span class="tr">trigger: "fix ... bug"</span>
+            <span class="state">&#9654; firing</span>
+          </div>
+          <div class="node fire">
+            <span class="nm">debug-loop</span>
+            <span class="tr">trigger: "fix ... bug"</span>
+            <span class="state">&#9654; firing</span>
+          </div>
+          <div class="node">
+            <span class="nm">write-tests</span>
+            <span class="tr">trigger: "add test ..."</span>
+            <span class="state">&#9675; idle</span>
+          </div>
+          <div class="node gap">
+            <span class="nm">"run the tests?"</span>
+            <span class="tr">no owner</span>
+            <span class="state">&#8709; no skill matches</span>
+          </div>
+        </div>
+        <div class="diagram-foot">Every piece looks right in isolation. <b>The assembled system is wrong</b>, and no single skill can tell you why.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pain" id="problem">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>More skills made your agent <span class="stop">worse</span>, not better.</h2>
+        <p class="s-lede">Not edge cases. The documented failure mode of any skill collection that grows without a system behind it. If you have shipped a few skills, you have met at least one of these.</p>
+      </div>
+      <div class="syms">
+        <div class="sym"><span class="sym-tag">skill trigger conflict</span><p>Two skills both fire on the same request. The agent silently picks the wrong one and you cannot tell why.</p></div>
+        <div class="sym"><span class="sym-tag">context bloat</span><p>Duplicate skills loading on every turn, wasting your context window before the agent has done anything useful.</p></div>
+        <div class="sym"><span class="sym-tag">skill shadowing</span><p>Adding more skills degraded accuracy. The new one shadowed an existing one instead of helping it.</p></div>
+        <div class="sym"><span class="sym-tag">cascading breakage</span><p>You edit one skill and something completely unrelated breaks elsewhere. No isolation between skills.</p></div>
+      </div>
+      <p class="sym-note">These symptoms recur across Cursor and Claude Code communities. Skill shadowing, where adding skills degrades performance, is a measured effect in agent-skills research. The bug is never in one skill. It is in the system.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="s-head">
+        <h2>Writing one skill is a craft. <span class="stop">Architecting fifty is engineering.</span></h2>
+        <p class="s-lede">Every guide on the planet teaches the first half. Nobody teaches the second. That gap is where agents quietly break.</p>
+      </div>
+      <div class="gap-row">
+        <div class="gap-card is-them">
+          <h3>Existing guides</h3>
+          <p>How to write a single skill well. Progressive disclosure, description fields, degrees of freedom. Necessary, but it is teaching you to write one good function.</p>
+        </div>
+        <div class="gap-arrow-v">&#8595;</div>
+        <div class="gap-arrow-h">&#8594;</div>
+        <div class="gap-card is-us">
+          <h3>System of Skills</h3>
+          <p>How to architect the whole collection. When skills conflict, when to merge instead of build, how to verify the system holds. The systems-engineering layer that was missing.</p>
+        </div>
+      </div>
+
+      <div class="map-wrap" role="table" aria-label="Codebase to skill-system mapping">
+        <table class="map-table">
+          <thead><tr><th>Codebase concept</th><th>What it becomes in a skill system</th></tr></thead>
+          <tbody>
+            <tr><td><span class="k">module</span><span class="v">a unit of code with one job</span></td><td><span class="k">skill</span><span class="v">a unit of agent behavior with one trigger</span></td></tr>
+            <tr><td><span class="k">interface</span><span class="v">how callers address the module</span></td><td><span class="k">trigger</span><span class="v">the observable yes/no condition that loads the skill</span></td></tr>
+            <tr><td><span class="k">contract</span><span class="v">what the module promises to return</span></td><td><span class="k">output shape</span><span class="v">what the skill leaves behind for the next skill or turn</span></td></tr>
+            <tr><td><span class="k">kernel / core lib</span><span class="v">shared primitives every module relies on</span></td><td><span class="k">core prompt</span><span class="v">the stable principles every skill traces back to</span></td></tr>
+            <tr><td><span class="k">regression test</span><span class="v">does this piece still work after a change</span></td><td><span class="k">eval loop</span><span class="v">does the whole collection still trigger cleanly and run end-to-end</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="map-cap">A skill collection is a codebase. Treat it like one.</p>
+    </div>
+  </section>
+
+  <section class="pain" id="principles">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="eyebrow">The methodology, in six moves</div>
+        <h2>Six principles to keep a skill collection <span class="stop">coherent</span>.</h2>
+        <p class="s-lede">Each one solves a specific failure mode of an unmanaged collection. Together they form a system you can actually reason about.</p>
+      </div>
+      <div class="princ-grid">
+        <div class="pitem"><div class="pnum">01</div><div><h3>Persistence Gradient</h3><p>Decide what stays loaded across turns versus what loads per task. Stops context bloat from duplicate skills.</p></div></div>
+        <div class="pitem"><div class="pnum">02</div><div><h3>System Coherence</h3><p>Skills must agree on shared state, naming, and authority. The collection behaves as one agent, not a committee.</p></div></div>
+        <div class="pitem"><div class="pnum">03</div><div><h3>Regime Gating</h3><p>Only one skill owns a request at a time. The first line of defense against trigger conflicts.</p></div></div>
+        <div class="pitem"><div class="pnum">04</div><div><h3>Orthogonal Coverage</h3><p>Two skills should not overlap in scope. Forces the merge-or-split decision before you build.</p></div></div>
+        <div class="pitem"><div class="pnum">05</div><div><h3>Flow</h3><p>Skills hand off cleanly along the real task path. No dead ends, no circular delegation between subagents.</p></div></div>
+        <div class="pitem"><div class="pnum">06</div><div><h3>Granularity</h3><p>Right-size each skill. Kill god-skills that try to handle everything and whose trigger means nothing.</p></div></div>
+      </div>
+
+      <div class="eval-band">
+        <span class="eb-tag">+ 07 &middot; eval loop</span>
+        <p class="eb-body">Single-skill eval asks "does this piece work?" <b>System-level eval asks "do all pieces together cover the space, trigger unambiguously, survive changes, and run end-to-end?"</b> Baseline without the skill first. No reproducible failure, no justification to build it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>Apply it from inside Claude Code.</h2>
+        <p class="s-lede">One command. Then Claude applies these principles the moment you ask "should I build a new skill?" or "why is my agent behaving unpredictably?".</p>
+      </div>
+      <div class="copy-row">
+        <pre class="codeblock" id="install-cmd"><span class="ps1">$</span> cp -r skill/ ~/.claude/skills/system-of-skills/
+<span class="c"># ask Claude:</span>
+<span class="ps1">&gt;</span> should I build a new skill, or merge into an existing one?
+<span class="ok">&#10003; system-of-skills loaded &middot; 6 principles active</span></pre>
+        <button class="copy-btn" id="copy-btn" type="button" aria-label="Copy install command">Copy</button>
+      </div>
+      <p class="install-note">Works with any Claude Code, Cursor, or compatible agent that reads <b>~/.claude/skills/</b>. No build step, no dependencies.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-left"><b>System of Skills</b> &middot; a methodology for designing skill collections</div>
+      <div class="foot-links">
+        <a href="./guide.en.html">English guide</a>
+        <a href="./skill-authoring-guide.html">&#20013;&#25991;&#25351;&#21335;</a>
+        <a href="https://github.com/k-r33/best-practice-for-skill-system">GitHub</a>
+        <a href="https://github.com/k-r33/best-practice-for-skill-system">&#9733; Star</a>
+      </div>
+      <div class="foot-lic">MIT licensed &middot; companion to, not a replacement for, Anthropic's official skill best-practices.</div>
+    </div>
   </div>
-</div>
+</footer>
+
+<script>
+  (function(){
+    var btn = document.getElementById('copy-btn');
+    if(!btn) return;
+    var cmd = "cp -r skill/ ~/.claude/skills/system-of-skills/";
+    btn.addEventListener('click', function(){
+      var done = function(){
+        var t = btn.getAttribute('data-orig') || btn.textContent;
+        if(!btn.getAttribute('data-orig')) btn.setAttribute('data-orig', t);
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = t; btn.classList.remove('copied'); }, 1600);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(cmd).then(done, done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = cmd; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta); done();
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
