@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill 系统工程方法论 · Engineering a System of Skills</title>
+<style>
+:root {
+  --bg: #F2F0ED;
+  --surface: #FFFFFF;
+  --text: #17171A;
+  --accent: #BF3A0D;
+  --blue: #2B659A;
+  --green: #1A6837;
+  --muted: #6B7280;
+  --border: #D6D2CC;
+  --code: #ECEAE6;
+  --bad: #8B1A1A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;line-height:1.65;padding-bottom:5rem}
+
+/* HEADER */
+header{background:var(--text);color:#fff;padding:3.8rem 2rem 2.8rem;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;bottom:0;right:0;width:40%;height:100%;background:var(--accent);clip-path:polygon(100% 0,100% 100%,0 100%);opacity:.08;pointer-events:none}
+.hdr{max-width:820px;margin:0 auto;position:relative;z-index:1}
+.hdr-eye{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:1rem}
+.hdr h1{font-family:Georgia,serif;font-size:clamp(1.9rem,4.5vw,2.9rem);font-weight:normal;line-height:1.18;max-width:600px}
+.hdr h1 em{font-style:normal;color:var(--accent)}
+.hdr-sub{margin-top:1rem;font-size:.9rem;color:rgba(255,255,255,.46);max-width:500px;line-height:1.6}
+.hdr-pills{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.8rem}
+.pill{font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;border:1px solid rgba(255,255,255,.18);padding:.2rem .62rem;border-radius:2px;color:rgba(255,255,255,.4)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:0 2rem}
+.sec{margin-top:4rem}
+hr.div{border:none;border-top:1px solid var(--border);margin:3.5rem 0 0}
+.sec-eye{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:.45rem}
+.sec-title{font-family:Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.8rem}
+.sec-sub{font-size:.9rem;color:var(--muted);max-width:560px;margin-bottom:1.8rem;line-height:1.6}
+
+/* ── 6 PRINCIPLES ── */
+.principles{display:flex;flex-direction:column;gap:1px}
+.principle{background:var(--surface);border:1px solid var(--border);border-radius:3px;display:grid;grid-template-columns:3.2rem 1fr;overflow:hidden}
+.p-num{display:flex;align-items:flex-start;justify-content:center;padding:1.2rem .5rem 1.2rem 0;font-family:Georgia,serif;font-size:2.2rem;line-height:1;color:var(--accent);font-weight:normal;opacity:.75}
+.p-body{padding:1.2rem 1.4rem 1.2rem .6rem;border-left:1px solid var(--border)}
+.p-name{font-family:Georgia,serif;font-size:1.05rem;font-weight:normal;margin-bottom:.25rem}
+.p-tagline{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:.6rem}
+.p-desc{font-size:.86rem;line-height:1.65;color:#3a3a3e}
+.p-desc strong{color:var(--text);font-weight:600}
+.p-desc em{font-style:normal;color:var(--blue);font-weight:500}
+.p-note{margin-top:.7rem;padding:.6rem .8rem;background:rgba(191,58,13,.05);border-left:2px solid rgba(191,58,13,.3);font-size:.78rem;line-height:1.5;color:#3a3a3e}
+.p-note code{font-family:"SFMono-Regular",monospace;font-size:.72rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+
+/* ── EXAMPLE CALLOUT ── */
+.eg{margin-top:.7rem;padding:.55rem .8rem;background:rgba(26,104,55,.04);border-left:2px solid rgba(26,104,55,.28);font-size:.78rem;line-height:1.6;color:#3a3a3e}
+.eg code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+.eg-bad{color:var(--bad);font-weight:700}
+.eg-good{color:var(--green);font-weight:700}
+/* ── SCENARIO SETUP ── */
+.scenario{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:4px;padding:1rem 1.2rem;margin-bottom:1.5rem}
+.scenario-eye{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:.4rem}
+.scenario-body{font-size:.82rem;line-height:1.65;color:#3a3a3e}
+.scenario-body strong{color:var(--text)}
+
+/* ── BUCKET DIAGRAM ── */
+.buckets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.bucket{background:var(--surface);padding:1.2rem 1.1rem}
+.bucket-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.2rem .5rem;border-radius:2px;margin-bottom:.6rem}
+.b-soul{background:rgba(191,58,13,.1);color:var(--accent)}
+.b-skill{background:rgba(43,101,154,.1);color:var(--blue)}
+.b-ref{background:rgba(107,114,128,.12);color:var(--muted)}
+.bucket-title{font-family:Georgia,serif;font-size:1rem;font-weight:normal;margin-bottom:.3rem}
+.bucket-when{font-size:.72rem;color:var(--muted);margin-bottom:.6rem;line-height:1.4}
+.bucket-rule{font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:.4rem}
+.bucket-examples{font-size:.75rem;color:var(--muted);line-height:1.55}
+.bucket-examples code{font-family:"SFMono-Regular",monospace;font-size:.7rem;background:var(--code);padding:.08rem .28rem;border-radius:2px;color:var(--blue)}
+.bucket-gradient{font-size:.73rem;color:#3a3a3e;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border);line-height:1.5}
+
+/* ── REGIME MATRIX ── */
+.matrix-wrap{overflow-x:auto}
+.matrix{display:grid;grid-template-columns:130px 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;min-width:500px}
+.mh{background:var(--code);padding:.55rem .9rem;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
+.mh.left{justify-content:flex-start}
+.mrl{background:var(--surface);padding:.9rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;border-right:1px solid var(--border)}
+.mc{background:var(--surface);padding:.85rem 1rem;font-size:.8rem;line-height:1.5;color:#3a3a3e}
+.mc.go{border-top:2px solid var(--green)}
+.mc.ng{border-top:2px solid var(--border);color:var(--muted)}
+.mc.sp{border-top:2px solid var(--blue)}
+.gtag{display:inline-block;font-size:.61rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.15rem .4rem;border-radius:2px;margin-bottom:.3rem}
+.t-go{background:rgba(26,104,55,.1);color:var(--green)}
+.t-ng{background:rgba(107,114,128,.1);color:var(--muted)}
+.t-sp{background:rgba(43,101,154,.1);color:var(--blue)}
+
+/* ── ANATOMY ── */
+.anatomy{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.an{display:grid;grid-template-columns:1.5rem 150px 1fr;border-bottom:1px solid var(--border);min-height:3.1rem;align-items:stretch}
+.an:last-child{border-bottom:none}
+.an-r{display:flex;align-items:center;justify-content:center;font-size:.54rem;writing-mode:vertical-rl;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.an-r.req{background:rgba(191,58,13,.07);color:var(--accent)}
+.an-r.opt{background:rgba(43,101,154,.07);color:var(--blue)}
+.an-f{padding:.7rem .9rem;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.an-fn{font-size:.8rem;font-weight:700;margin-bottom:.1rem}
+.an-fc{font-family:"SFMono-Regular",monospace;font-size:.68rem;color:var(--blue)}
+.an-d{padding:.7rem 1.1rem;font-size:.79rem;line-height:1.55;color:#3a3a3e;display:flex;align-items:center}
+.an-d code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+
+/* ── ILL-POSED ── */
+.ill-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.ill{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--bad);border-radius:3px;padding:.95rem 1rem}
+.ill-name{font-size:.76rem;font-weight:700;color:var(--bad);margin-bottom:.28rem}
+.ill-sign{font-size:.77rem;color:var(--muted);line-height:1.5;margin-bottom:.4rem}
+.ill-fix{font-size:.73rem;color:var(--green);border-top:1px solid var(--border);padding-top:.38rem}
+.ill-fix::before{content:'→ ';font-weight:700}
+
+/* ── REVIEW ── */
+.review{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.rv{display:grid;grid-template-columns:1.5rem 1fr;border-bottom:1px solid var(--border);align-items:stretch}
+.rv:last-child{border-bottom:none}
+.rv-n{background:var(--code);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:.82rem;color:var(--blue);border-right:1px solid var(--border)}
+.rv-b{padding:.8rem 1.1rem}
+.rv-q{font-size:.84rem;font-weight:600;margin-bottom:.15rem}
+.rv-d{font-size:.76rem;color:var(--muted);line-height:1.5}
+.rv-d code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+
+/* ── FURTHER READING ── */
+.further{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.1rem 1.2rem}
+.fr-title{font-family:Georgia,serif;font-size:1rem;font-weight:normal;margin-bottom:.5rem}
+.fr-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+.fr-link{font-size:.73rem;color:var(--blue);margin-top:.6rem;display:block}
+
+/* ── POSITIONING ── */
+.positioning{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:1.5rem 1.7rem}
+.pos-eye{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:.7rem}
+.pos-lead{font-family:Georgia,serif;font-size:1.12rem;line-height:1.5;margin-bottom:.9rem;color:var(--text)}
+.pos-lead strong{color:var(--accent);font-weight:normal;font-style:italic}
+.pos-lead a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(43,101,154,.35)}
+.pos-body{font-size:.88rem;line-height:1.7;color:#3a3a3e}
+.pos-body strong{color:var(--text);font-weight:600}
+
+/* FOOTER */
+footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px solid var(--text);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.8rem}
+.f-l{font-family:Georgia,serif;font-size:.87rem;font-style:italic;color:var(--muted)}
+.f-r{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+
+@media(max-width:640px){
+  .buckets,.further{grid-template-columns:1fr}
+  .ill-grid{grid-template-columns:1fr}
+  .principle{grid-template-columns:2.4rem 1fr}
+  .p-num{font-size:1.8rem}
+  .an{grid-template-columns:1.3rem 110px 1fr}
+  .positioning{padding:1.2rem 1.1rem}
+  .pos-lead{font-size:1.02rem}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div style="margin-bottom:1rem;font-size:.7rem;letter-spacing:.06em"><a href="./guide.en.html" style="color:rgba(255,255,255,.45);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:.1rem">English</a> <span style="color:rgba(255,255,255,.2);margin:0 .4rem">·</span> <span style="color:rgba(255,255,255,.7);font-weight:600">中文</span></div>
+    <div class="hdr-eye">System of Skills · 系统工程方法论</div>
+    <h1>把一组 skill 设计成一个<em>自洽的系统</em></h1>
+    <p class="hdr-sub" style="color:rgba(255,255,255,.32);font-size:.78rem;margin-bottom:.5rem;letter-spacing:.02em">Designing a skill collection as a coherent system — not just writing good individual skills</p>
+    <p class="hdr-sub">单个 skill 怎么写，Anthropic 官方指南已经讲透；这里讲的是更高一层——一整套 skill 加多个 agent，如何拼成一个自洽、可演化、可验证的系统。六条静态设计原则，加一套实证评估回路。</p>
+    <div class="hdr-pills">
+      <span class="pill">持久性梯度</span>
+      <span class="pill">系统一致性</span>
+      <span class="pill">Regime 门控</span>
+      <span class="pill">正交覆盖</span>
+      <span class="pill">心流</span>
+      <span class="pill">粒度纪律</span>
+      <span class="pill">评估回路</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- POSITIONING -->
+<section class="sec" style="margin-top:3rem">
+  <div class="positioning">
+    <div class="pos-eye">这份文档的定位 · System engineering, not single-skill authoring</div>
+    <p class="pos-lead">这不是"怎么写好<strong>一个</strong> skill"的指南——progressive disclosure、description 写法、degrees of freedom 这些单个 skill 的工艺，<a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Anthropic 官方 best-practices</a> 已经讲清楚了。</p>
+    <p class="pos-body">这份文档处理的是更高一层的问题：<strong>一整套 skill 加上多个 agent，如何拼成一个自洽的系统</strong>。把每个 skill 当模块、trigger 当接口、输出当契约、核心 prompt 当内核——当零件多起来、agent 开始互相编排，<strong>零件级的正确不再蕴含系统级的正确</strong>。这是系统工程：覆盖、正交、接口契约、回归、端到端验证。下面六条原则负责<strong>静态自洽</strong>，最后的评估回路负责<strong>实证验证</strong>。</p>
+  </div>
+</section>
+
+<!-- SIX PRINCIPLES -->
+<section class="sec">
+  <div class="scenario">
+    <div class="scenario-eye">贯穿例子 · Running Example</div>
+    <p class="scenario-body">你在给一个帮你发代码的 agent 装 skill：<strong>write-tests</strong>（写测试）、<strong>review-diff</strong>（审查 diff）、<strong>debug</strong>（调试失败）、<strong>commit</strong>（提交）、<strong>refactor</strong>（重构），加一个 <strong>planner</strong> 用 workflow 把它们编排起来。每条单独看都没问题——但装在一起，问题接踵而至。下面六条原则用这套系统来演示。<br><span style="color:var(--muted)"><em>You're building a coding agent: write-tests, review-diff, debug, commit, refactor — planner-orchestrated. Each skill looks fine alone. Together, things break. The six principles below show exactly how and why.</em></span></p>
+  </div>
+
+  <div class="sec-eye">核心方法论 · Core Principles</div>
+  <h2 class="sec-title">六条原则 <span style="font-family:-apple-system,sans-serif;font-size:.95rem;color:var(--muted);font-weight:400">Six Principles</span></h2>
+  <p class="sec-sub">这六条不是独立的规则，是一套相互咬合的逻辑体。每一条回答设计过程中的一个根本问题。<br><span style="color:var(--muted);font-size:.82em">Six interlocking principles — each answers one fundamental design question.</span></p>
+
+  <div class="principles">
+
+    <div class="principle">
+      <div class="p-num">1</div>
+      <div class="p-body">
+        <div class="p-tagline">放在哪里 · 持久性梯度</div>
+        <div class="p-name">常驻 → 按需 → 参考素材</div>
+        <div class="p-desc">
+          知识放在哪一层，由它的<strong>使用频率</strong>决定。每轮都必须在场的东西放进核心 prompt（Soul）；某个角色/场景被激活时才需要的东西放进 skill；在 skill 激活的前提下才按概率取用的深度材料，放进 skill 下的 <em>reference/</em> 或 <em>scripts/</em> 文件夹。
+        </div>
+        <div class="p-note">
+          判断标准不是"重要不重要"，而是"多久用一次"。一个很重要但只在特定场景需要的规则，不属于 prompt——它属于 skill。放错层级的代价：太高则每轮浪费 context，太低则变成无法触达的死知识。
+        </div>
+        <div class="eg"><span class="eg-bad">❌ 典型错误：</span>"提交前必须跑测试""不提交密钥"——这些宪法级规则被写进了 <code>commit</code> skill。但 <code>refactor</code>、<code>review-diff</code> 的 subagent 根本看不见 <code>commit</code>，照样提交没跑测试的代码。<br><span class="eg-good">✓ 修法：</span>宪法级规则属于 Soul；<code>commit</code> skill 只写"怎么提交"的工艺。</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">2</div>
+      <div class="p-body">
+        <div class="p-tagline">整体质量 · 系统一致性</div>
+        <div class="p-name">prompt + skills + scripts 形成统一意图的逻辑体</div>
+        <div class="p-desc">
+          零件好不等于系统好。所有层（核心 prompt、每个 skill、每个 reference 文件、每个脚本）必须服务于同一个 north star，能形成<strong>自洽的推理链</strong>。任何一个零件的意图和整体系统矛盾，就会在某个边界产生无法预测的行为。
+        </div>
+        <div class="p-note">
+          检验方法：任取系统中的任意一个 skill，能否在它里面找到一句话，把它的存在追溯到核心 prompt 的某个原则？找不到 → 这个 skill 是浮空的，要么补 Soul anchor，要么删掉。
+        </div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">3</div>
+      <div class="p-body">
+        <div class="p-tagline">什么时候建 Skill · Regime 门控</div>
+        <div class="p-name">使用者 × 场景 决定是否设计 skill</div>
+        <div class="p-desc">
+          Skill 的身份由两个维度定义：<strong>谁在用它（agent/role）</strong>和<strong>在什么场景下用（trigger/scene）</strong>。任意一个维度变了 → 考虑独立 skill。两个都没变 → 归并、降为 reference 或直接删掉，不新建。多 agent 协作时：设一个 planner skill 负责编排，每个 agent 有自己的独立 skill——不共享 SKILL.md。
+        </div>
+        <div class="p-note">
+          最常见的错误：因为"内容相关"就建 skill。正确的问题是："这个使用者和场景的组合，和已有 skill 有没有根本性的不同？"没有 → 别建。
+        </div>
+        <div class="eg"><span class="eg-bad">❌ 典型错误：</span>你加了 <code>review-security</code>，因为"安全审查感觉和代码审查相关"。结果 <code>review-diff</code> 和 <code>review-security</code> trigger 重叠，同一个 diff 两个 skill 都抢着触发，agent 拿到两个互相矛盾的权威。<br><span class="eg-good">✓ 修法：</span>安全审查只是 <code>review-diff</code> 的一个 mode，不是独立 regime——合并，或降为 reference 文件。</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">4</div>
+      <div class="p-body">
+        <div class="p-tagline">单一使用者的完备性 · 正交覆盖</div>
+        <div class="p-name">无重叠、无空白、边界显式</div>
+        <div class="p-desc">
+          对同一个 agent，它的所有 skills 必须满足：<strong>任意系统状态恰好触发一个 skill，不多不少</strong>。两个 skill 在同一状态都能触发 → 冲突，必须修 trigger。某个状态没有 skill 接管 → 空白，必须填补或明确记录为"故意不覆盖"。每个 skill 结尾用 <em>Not for X → [[sibling]]</em> 显式声明边界——这是接口契约，不是可选项。
+        </div>
+        <div class="p-note">
+          注意分寸：skill 天生是<strong>可组合</strong>的，运行时可以同时挂载多个。"恰好一个"是<strong>消歧的设计理想</strong>——避免该触发的没触发、不该抢的抢了——不是"运行时只准一个 skill 在场"的硬性法则。正交是为了让选择确定，不是禁止组合。
+        </div>
+        <div class="eg"><span class="eg-bad">❌ 典型错误：</span>你有 <code>write-tests</code> 和 <code>run-tests</code>，但没有任何 skill 处理"CI 红了，不知道为什么"。agent 遇到这个状态只能裸跑，每次即兴发明解法，行为不可预测。<br><span class="eg-good">✓ 修法：</span>枚举所有真实场景，找没人接管的格子——要么补一个 skill，要么显式记录为"故意不覆盖"。</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">5</div>
+      <div class="p-body">
+        <div class="p-tagline">Trigger 精准 + 意图先行 · 心流</div>
+        <div class="p-name">Trigger 是精确入口，SKILL.md 意图在前、方法论在后</div>
+        <div class="p-desc">
+          Trigger（description 字段）是可观测的明确条件，不是描述性的标签。必须能在任意具体状态下做 yes/no 判断。进入 skill 之后，先说<strong>"为什么这个角色存在 / 什么是好的工作"</strong>，方法论跟在后面。这产生心流：意图建立方向感，方法论在这个方向下自然涌现——而不是拿着工具找问题。
+        </div>
+        <div class="p-note">
+          先写方法论的 skill 让 agent 陷入机械执行；先写意图的 skill 让 agent 带着目的行动，在方法论没有覆盖的情况下也能做出合理判断。信任模型的智能，堵不如疏。
+        </div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">6</div>
+      <div class="p-body">
+        <div class="p-tagline">Skill 的大小 · 粒度纪律</div>
+        <div class="p-name">一个 skill 清晰地说一件事</div>
+        <div class="p-desc">
+          Skill 的粒度要和它服务的 regime 匹配。太粗：一个 skill 想覆盖所有情况，trigger 变得模糊，内容相互干扰 → 按 regime 拆。太细：内容太单薄、撑不起一个独立 regime → 合并进父 skill 或降为 reference 文件。<strong>正确粒度的标志</strong>：读 description 就能清楚知道"在什么情况下用这个"，读完 SKILL.md 之后 agent 知道"在这个 regime 里如何行动"。衡量长短不看行数，看密度——<strong>言之有物、不拖沓、同时讲清楚</strong>：只要每句都在传递模型还不知道的信息，该长就长；为压缩而牺牲清晰，才是真问题。
+        </div>
+        <div class="p-note">
+          测试：把这个 skill 的 description 给不了解系统的人看，他能判断"现在这个情况该不该用它"吗？如果要解释很多背景才能判断 → 粒度有问题，要么 trigger 不准，要么 skill 太粗。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- THREE BUCKETS -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">原则 1 展开 · Three Buckets</div>
+  <h2 class="sec-title">每件知识属于哪一层 <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">Where Does Each Piece of Knowledge Belong?</span></h2>
+  <p class="sec-sub">按使用频率决定层级，不按重要性。重要但按需才用的东西，不应该常驻 prompt。</p>
+
+  <div class="buckets">
+    <div class="bucket">
+      <span class="bucket-badge b-soul">Soul / 核心 prompt</span>
+      <div class="bucket-title">常驻，每轮都在</div>
+      <div class="bucket-when">无论哪个角色在运行，这里的内容总是存在于 context 里</div>
+      <div class="bucket-rule">放进来的测试：</div>
+      <div class="bucket-examples">"这个东西在完全空闲、没有任何任务运行时也必须在场吗？"<br><br>
+        放：north star（北极星）目标 · 生命周期状态机 · 宪法级约束指针<br><br>
+        不放：任何角色专属的方法论、任何场景特定的规则
+      </div>
+    </div>
+    <div class="bucket">
+      <span class="bucket-badge b-skill">Skill</span>
+      <div class="bucket-title">按 Regime 挂载</div>
+      <div class="bucket-when">特定角色/场景被激活时才加载；其他时候不在 context 里</div>
+      <div class="bucket-rule">放进来的测试：</div>
+      <div class="bucket-examples">"这个东西只在某个角色做某件事时才需要吗？"<br><br>
+        放：角色存在的意图 · 好工作的判断标准 · 智慧与经验模式 · 边界声明<br><br>
+        不放：代码 · 领域事实 · 深度方法论细节（→ reference）
+      </div>
+    </div>
+    <div class="bucket">
+      <span class="bucket-badge b-ref">reference / scripts</span>
+      <div class="bucket-title">概率性取用</div>
+      <div class="bucket-when">skill 激活后，agent 在遇到特定子任务时主动读取；并非每次都用</div>
+      <div class="bucket-rule">放进来的测试：</div>
+      <div class="bucket-examples">"这个东西在 skill 已经激活的前提下，只在某些子情况才需要吗？"<br><br>
+        <code>reference/</code>：深度方法论、决策树、路由表、领域事实<br>
+        <code>scripts/</code>：可执行脚本、工具代码、数据处理<br><br>
+        重要性越高、用到概率越高 → 越靠近 SKILL.md 本体（在参考表里排前面）
+      </div>
+      <div class="bucket-gradient">
+        <strong>梯度原则：</strong>reference 文件夹内部也有梯度——高频使用的方法论文件放参考表首位，低频的放后面。整个 skill 目录是一个由近到远、由高频到低频的知识漏斗。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGIME MATRIX -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">原则 3 展开 · Decision Matrix</div>
+  <h2 class="sec-title">使用者 × 场景：什么时候建新 Skill <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">When to Build a New Skill</span></h2>
+
+  <div class="matrix-wrap">
+    <div class="matrix">
+      <div class="mh left">使用者 ↓ · 场景 →</div>
+      <div class="mh">场景变了</div>
+      <div class="mh">场景相同</div>
+
+      <div class="mrl">使用者变了</div>
+      <div class="mc go">
+        <div class="gtag t-go">建 2 个独立 skill</div>
+        两个维度都变。分别写 skill，各有自己的 trigger、Soul anchor、边界声明。永不共享 SKILL.md。
+      </div>
+      <div class="mc go">
+        <div class="gtag t-go">建 2 个独立 skill</div>
+        场景相同但使用者不同。角色目的、智慧、产出各异——共享 SKILL.md 只会让两个角色都得到错误的上下文。
+      </div>
+
+      <div class="mrl">使用者相同</div>
+      <div class="mc sp">
+        <div class="gtag t-sp">单 skill 多 mode，或 sub-skill</div>
+        同一角色，不同场景。先考虑"phase-aware"单 skill（多模式）；如果场景差异够大才拆 sub-skill。
+      </div>
+      <div class="mc ng">
+        <div class="gtag t-ng">不建新 skill</div>
+        这是补充材料，不是新 regime。归并到现有 skill 的 reference/ 或直接删掉。建了只会产生 trigger 冲突。
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;font-size:.8rem;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--text)">多角色协作时：</strong>设一个 planner skill（负责编排、路由、生命周期）+ N 个 agent sub-skills（各自的意图和方法论）。Planner 只管调度，不管执行。所有 agent 共享的宪法规则 → Soul，不重复写进每个 sub-skill。
+  </div>
+</section>
+
+<!-- SKILL.MD ANATOMY -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">原则 5 展开 · SKILL.md Anatomy</div>
+  <h2 class="sec-title">SKILL.md 的结构：意图在前，方法论在后</h2>
+  <p class="sec-sub">这里只列与<strong>系统自洽</strong>相关的结构钩子（Soul anchor 追溯、Not-for 契约、智慧/法律分层）；单个字段怎么写得好，见官方指南。SKILL.md 主体留给文字和方法论：重代码 → scripts/，决策树与领域事实 → reference/（短示例片段内联无妨）。注：YAML 里 Claude 官方只强制 name 和 description 两个字段；下表里标"必须"的是<strong>本方法论的约定</strong>（用来保证系统自洽），不是平台的硬性要求。</p>
+
+  <div class="anatomy">
+    <div class="an">
+      <div class="an-r req">必须</div>
+      <div class="an-f"><div class="an-fn">Trigger</div><div class="an-fc">description: Use when…</div></div>
+      <div class="an-d">可观测的明确入口条件。在任意具体状态做 yes/no 判断。必须含排除声明：<code>Not for X (→ [[sibling]])</code>。这是机器可读的契约，不是描述文字。</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">必须</div>
+      <div class="an-f"><div class="an-fn">Soul anchor</div><div class="an-fc">**Soul anchor:** `id`</div></div>
+      <div class="an-d">追溯到核心 prompt 里的具体原则。没有这行，skill 是浮空的——审阅者和 agent 都无法验证系统是否自洽。</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">必须</div>
+      <div class="an-f"><div class="an-fn">意图</div><div class="an-fc">## 存在的目的</div></div>
+      <div class="an-d">1–3 句。这个角色为什么存在。写成推理质量的标准，不是步骤列表。这是 skill 的灵魂——agent 从这里建立方向感，然后方法论才有意义。</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">必须</div>
+      <div class="an-f"><div class="an-fn">边界声明</div><div class="an-fc">## Not for</div></div>
+      <div class="an-d">显式排除：<code>→ 不做 X → [[兄弟 skill]]</code>。这是接口契约。没有它，正交性无从验证，scope 悄悄蔓延。</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">可选</div>
+      <div class="an-f"><div class="an-fn">好工作标准</div><div class="an-fc">## 什么是好的工作</div></div>
+      <div class="an-d">从外部可观察的结果质量描述成功。让 agent 能自评，不需要人来判断。写成"好工作应该是……"，不是"完成了哪些步骤"。</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">可选</div>
+      <div class="an-f"><div class="an-fn">智慧与经验</div><div class="an-fc">## 经验与智慧</div></div>
+      <div class="an-d">积累的模式和陷阱。<strong>必须标注"参考，不是约束"</strong>。宪法级不变量（write≠call, freeze-before-results…）单独分节、明确标注为法律。两者不能混写。</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">可选</div>
+      <div class="an-f"><div class="an-fn">参考表</div><div class="an-fc">## 工具与参考</div></div>
+      <div class="an-d">场景 → 文件路径。纯文字，无代码。每个列出的文件必须存在且有内容。Skill 是索引，深度在 <code>reference/</code> 里。高频在前，低频在后。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ILL-POSED -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">常见问题诊断 · Six Failure Modes</div>
+  <h2 class="sec-title">Skill 的六种病态 <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">What Goes Wrong</span></h2>
+
+  <div class="ill-grid">
+    <div class="ill">
+      <div class="ill-name">Trigger 模糊</div>
+      <div class="ill-sign">description 能在多个不同状态下触发，无法做确定性判断。</div>
+      <div class="ill-fix">把 trigger 改成可观测条件，加排除声明。每个具体状态的答案必须是明确的 yes 或 no。</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Trigger 冲突</div>
+      <div class="ill-sign">两个 skill 在同一系统状态下都可以触发，agent 面对两个权威。</div>
+      <div class="ill-fix">画状态图，确保任意状态最多触发一个 skill。在双方 description 里加互相排除的声明。</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">两个角色共享一个 SKILL.md</div>
+      <div class="ill-sign">两个不同 agent 用同一个 skill 文件，意图、智慧、产出都不一样但被迫合并。</div>
+      <div class="ill-fix">按角色拆分。共用的方法论 → reference 文件。共用的规则 → Soul 或宪法 skill。</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">层级放错</div>
+      <div class="ill-sign">跨角色的宪法规则藏进了某一个角色的 L1 skill（其他角色看不见）。或角色专属的内容进了 Soul（每轮浪费）。</div>
+      <div class="ill-fix">所有角色都需要 → Soul。只有这个角色需要 → L1 skill。只在特定子任务需要 → reference。</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">SKILL.md 被实现细节淹没</div>
+      <div class="ill-sign">skill 文件塞满成段的实现代码、长决策树、技术 schema，方法论意图被淹没，skill 变得脆弱（代码一变 skill 就要改）。短示例片段无妨——问题是<strong>重</strong>实现。</div>
+      <div class="ill-fix">重代码 → <code>scripts/</code>。决策树 → <code>reference/routing-table.md</code>。Schema → <code>reference/</code>。SKILL.md 主体留给方法论。</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">覆盖空白</div>
+      <div class="ill-sign">系统存在某个真实的状态，但没有 skill 负责处理它。Agent 进入这个状态后无依据，只能即兴发挥。</div>
+      <div class="ill-fix">列出所有有意义的系统状态，为每个状态找到 skill owner。空白要么填补，要么明确记录为"故意不覆盖"。</div>
+    </div>
+  </div>
+</section>
+
+<!-- SELF-REVIEW -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">发布前自查 · Pre-publish Checklist</div>
+  <h2 class="sec-title">七个问题 <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">Seven Questions Before You Ship</span></h2>
+
+  <div class="review">
+    <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">每个 skill 对应唯一的 (使用者, 场景) 组合吗？</div><div class="rv-d">如果两个 skill 服务相同的 agent 和相同的 trigger 条件，合并它们。Regime 相同 → 不需要两个 skill。</div></div></div>
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">所有 skill 能追溯到 Soul 里的具体原则吗？</div><div class="rv-d">每个 skill 能完成："这个 skill 服务于 Soul 原则 [X]，因为……"。完成不了 → 要么 Soul 缺这个节点，要么 skill 不属于这个系统。</div></div></div>
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">任意系统状态最多触发一个 skill 吗？</div><div class="rv-d">把所有 skill 的 description 放一起看，找交集。有交集 → trigger 冲突，修排除声明。完整状态空间覆盖了吗？有空白 → 补 skill 或明确记录。</div></div></div>
+    <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">SKILL.md 有没有被重代码或实现细节淹没？</div><div class="rv-d">扫描成段代码、长决策树、数据 schema（短示例无妨）。发现了 → 移到 <code>scripts/</code> 或 <code>reference/</code>。SKILL.md 是方法论文档，不是实现文档。</div></div></div>
+    <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">所有 reference 文件都有 skill 指向它们吗？</div><div class="rv-d">在所有 SKILL.md 里搜索每个 reference 文件名。零命中 = 孤儿文件，agent 永远找不到它。加进某个 skill 的参考表，或者删掉。</div></div></div>
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">智慧（参考）和法律（不可违反）分开标注了吗？</div><div class="rv-d">宪法级约束（write≠call, freeze-before-results…）必须标注为不可违反。经验模式必须标注"参考，不是约束"。混在一起 → agent 不知道哪个可以灵活处理，哪个是红线。</div></div></div>
+    <div class="rv"><div class="rv-n">7</div><div class="rv-b"><div class="rv-q">每个 skill 的粒度是否刚好说清一件事？</div><div class="rv-d">读 description，不了解系统的人能判断"现在该不该用它"吗？需要很多解释 → trigger 不准或粒度太粗。内容单薄、撑不起一个独立 regime → 降为 reference 文件（标准是言之有物，不是凑行数）。</div></div></div>
+  </div>
+</section>
+
+<!-- EVALUATION LOOP -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">实证回路 · Empirical Verification</div>
+  <h2 class="sec-title">第七件事：评估整个系统，而不是单个零件 <span style="font-family:-apple-system,sans-serif;font-size:.9rem;color:var(--muted);font-weight:400">Evaluate the System, Not Just the Parts</span></h2>
+  <p class="sec-sub">前面六条原则加七问，审的是<strong>静态设计</strong>的自洽性——读着对，未必跑着对。系统是否真的覆盖了状态空间、转移是否真的确定、改一处会不会碰倒他处，只有把它放回真实输入里跑才知道。<br><span style="color:var(--blue)">单 skill 评估问"这个零件能用吗"；系统级评估问"零件装在一起，覆盖全、转移准、改一处不坏他处、串成 pipeline 还跑得通吗"。</span></p>
+
+  <div class="review">
+    <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">先关掉 skill 跑一遍：建立基线（baseline without skill）</div><div class="rv-d">要验证一个 skill 是否真有用，先把它从系统里摘掉，让 agent 在裸状态下跑同一组任务，记录它在哪里失败、怎么失败。这个失败画面就是基线，也是这个 skill 存在的理由。<strong>没有可复现的失败基线，就别写 skill</strong>——你无法证明加进来的零件不是在解决一个本来就不存在的问题。评估场景是系统的事实来源：先有失败的场景，再有 skill。</div></div></div>
+
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger 消歧回归：该触发的触发、不该抢的不抢</div><div class="rv-d">把所有 skill 的 description 收集成一组探测输入，专挑边界与歧义场景，逐条跑：每个输入下到底命中了哪个 skill。该触发的没触发 = trigger 失灵；不该抢的抢了 = 边界侵入。（skill 本就可组合、可多个同时在场——这里测的是<strong>选择是否确定</strong>，不是"只准一个 skill 出现"。）把这组探测固化成可重跑的回归集，每次新增或改写 description 都重跑——人工读 description 找交集会漏，让真实输入替你找。</div></div></div>
+
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">覆盖空白探测：状态空间里没有黑洞</div><div class="rv-d">枚举"使用者 × 场景"矩阵里的真实组合，逐格追问：落到这一格的请求，系统会怎么处理。没有任何 skill 接管、agent 只能裸跑硬扛的格子，就是覆盖空白。把空白显式列出来——要么补 skill，要么明确登记为"故意不覆盖"，而不是让它静默漏掉。系统演化时新状态会持续暴露新空白，所以这是回归项，不是一次性检查。</div></div></div>
+
+    <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">跨 agent 输出契约测试：校验产物，不校验过程</div><div class="rv-d">agent 之间靠固定 artifact 通信（约定的路径、字段、格式），这就是系统的接口契约。为每个交接点写只检查产物的测试：上游产出的 artifact 是否满足下游声明依赖的结构与字段；缺字段、改格式、路径漂移都要被测出来。契约这类结构校验，是整套评估里少数能做成<strong>硬断言</strong>的部分；多数行为评估仍靠自然语言 rubric 由模型判分（见本节末注）。契约绿了，你才能放心替换任一 skill 的内部实现而不牵动整条链路——这正是"输出契约 / 可演化性"在测试层的落地。</div></div></div>
+
+    <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">改一处不坏他处：系统级回归套件</div><div class="rv-d">skill 之间通过 Soul、共享 reference、trigger 边界、输出契约彼此咬合，改一个常会在远处碰倒另一个。把基线、消歧、覆盖、契约这几组测试合成<strong>一个回归套件</strong>，任何 skill 改动后整体重跑，而不只跑被改 skill 自己的用例。系统级缺陷的典型形态正是"单看每个 skill 都对，组合起来错"——回归套件就是专门抓这种隐性耦合断裂的安全网。</div></div></div>
+
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">端到端编排 + 多模型分级（Haiku / Sonnet / Opus）</div><div class="rv-d">最后跑全链路：给一个需要多角色协作的真实任务，让 planner 从头编排到产出最终交付，断言整条指挥链——路由有没有选对、生命周期有没有推进对、最终产物是否仍指向 north star。同一套场景在 Haiku / Sonnet / Opus 上各跑一遍：弱模型会把含糊的 trigger 和过度自由的指令放大成失败，强模型则会暴露过度约束。能在最弱模型上稳定走完全链路的系统，才是真正确定的系统。</div></div></div>
+  </div>
+
+  <div style="margin-top:1.1rem;font-size:.78rem;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--text)">出处与分寸：</strong>"先跑无 skill 的基线、评估是事实来源、在 Haiku/Sonnet/Opus 上都要测"出自 Anthropic 官方 best-practices；"没有失败的测试就不写 skill（RED → GREEN → REFACTOR）、用压力场景逼出 rationalization"出自 superpowers 的 writing-skills。两者都只讲到<strong>单个 skill</strong> 的评估——把它扩展到 trigger 消歧、覆盖、跨 agent 契约、系统级回归、端到端编排，是本方法论顺着"系统工程"主线做的合理外推，不是官方原文。另外：官方目前<strong>没有</strong>内置的评估运行器，上面的"回归集"需要你自己搭；评估多用自然语言 rubric 由模型判分，不是严格的断言式单元测试。
+  </div>
+</section>
+
+<!-- FURTHER READING -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">延伸阅读 · Going Deeper</div>
+  <h2 class="sec-title">Further Reading</h2>
+  <p class="sec-sub">这两个话题前面已多次引用（尤其评估章节的契约测试）；这里补充它们的完整定义与模板出处。<br><span style="color:var(--muted);font-size:.9em">Both concepts were referenced throughout — here's the complete definition and implementation guidance.</span></p>
+
+  <div class="further">
+    <div class="fr-card">
+      <div class="fr-title">输出契约（Output Contract）</div>
+      <div class="fr-desc">
+        每个 skill 应该明确它产出什么——artifact 名称、文件路径、格式约定。上下游通过固定产物通信，而不是直接耦合。这让 skills 可以独立演化而不破坏整体。设计好了，你可以换掉任何一个 skill 的实现，只要它产出相同的 artifact。
+      </div>
+      <span class="fr-link">→ 落地：给每个交接点定一个固定路径 + 字段约定的产物（如一个 handoff.json），写进 skill 的"输出契约"小节，上下游都按它断言。</span>
+    </div>
+    <div class="fr-card">
+      <div class="fr-title">可演化性（Evolvability）</div>
+      <div class="fr-desc">
+        不是所有 skill 都应该能被 agent 修改。区分"锁死"（Constitutional/Locked）和"可演化"（Seed）：锁死的是宪法级约束和评估权威，agent 可以读但不能改；可演化的是方法论 skill，agent 在使用中可以改进。这决定了系统的信任模型。
+      </div>
+      <span class="fr-link">→ 落地：目录里用 locked/ 与 seed/ 两区（或文件头标注）区分——宪法约束与评估权威放 locked/（只读），方法论 skill 放 seed/（可改）。</span>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="f-l">意图建立方向，方法论在方向下自然涌现。</div>
+  <div class="f-r">持久性 · 一致性 · Regime · 正交 · 心流 · 粒度 · 评估</div>
+</footer>
+
+</body>
+</html>

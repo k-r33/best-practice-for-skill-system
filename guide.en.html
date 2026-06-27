@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineering a System of Skills · Methodology Guide</title>
+<style>
+:root {
+  --bg: #F2F0ED;
+  --surface: #FFFFFF;
+  --text: #17171A;
+  --accent: #BF3A0D;
+  --blue: #2B659A;
+  --green: #1A6837;
+  --muted: #6B7280;
+  --border: #D6D2CC;
+  --code: #ECEAE6;
+  --bad: #8B1A1A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;line-height:1.65;padding-bottom:5rem}
+header{background:var(--text);color:#fff;padding:3.8rem 2rem 2.8rem;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;bottom:0;right:0;width:40%;height:100%;background:var(--accent);clip-path:polygon(100% 0,100% 100%,0 100%);opacity:.08;pointer-events:none}
+.hdr{max-width:820px;margin:0 auto;position:relative;z-index:1}
+.hdr-eye{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:1rem}
+.hdr h1{font-family:Georgia,serif;font-size:clamp(1.9rem,4.5vw,2.9rem);font-weight:normal;line-height:1.18;max-width:600px}
+.hdr h1 em{font-style:normal;color:var(--accent)}
+.hdr-sub{margin-top:1rem;font-size:.9rem;color:rgba(255,255,255,.46);max-width:500px;line-height:1.6}
+.hdr-pills{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.8rem}
+.pill{font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;border:1px solid rgba(255,255,255,.18);padding:.2rem .62rem;border-radius:2px;color:rgba(255,255,255,.4)}
+.wrap{max-width:820px;margin:0 auto;padding:0 2rem}
+.sec{margin-top:4rem}
+hr.div{border:none;border-top:1px solid var(--border);margin:3.5rem 0 0}
+.sec-eye{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:.45rem}
+.sec-title{font-family:Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.8rem}
+.sec-sub{font-size:.9rem;color:var(--muted);max-width:560px;margin-bottom:1.8rem;line-height:1.6}
+.principles{display:flex;flex-direction:column;gap:1px}
+.principle{background:var(--surface);border:1px solid var(--border);border-radius:3px;display:grid;grid-template-columns:3.2rem 1fr;overflow:hidden}
+.p-num{display:flex;align-items:flex-start;justify-content:center;padding:1.2rem .5rem 1.2rem 0;font-family:Georgia,serif;font-size:2.2rem;line-height:1;color:var(--accent);font-weight:normal;opacity:.75}
+.p-body{padding:1.2rem 1.4rem 1.2rem .6rem;border-left:1px solid var(--border)}
+.p-name{font-family:Georgia,serif;font-size:1.05rem;font-weight:normal;margin-bottom:.25rem}
+.p-tagline{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:.6rem}
+.p-desc{font-size:.86rem;line-height:1.65;color:#3a3a3e}
+.p-desc strong{color:var(--text);font-weight:600}
+.p-desc em{font-style:normal;color:var(--blue);font-weight:500}
+.p-note{margin-top:.7rem;padding:.6rem .8rem;background:rgba(191,58,13,.05);border-left:2px solid rgba(191,58,13,.3);font-size:.78rem;line-height:1.5;color:#3a3a3e}
+.p-note code{font-family:"SFMono-Regular",monospace;font-size:.72rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+.eg{margin-top:.7rem;padding:.55rem .8rem;background:rgba(26,104,55,.04);border-left:2px solid rgba(26,104,55,.28);font-size:.78rem;line-height:1.6;color:#3a3a3e}
+.eg code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+.eg-bad{color:var(--bad);font-weight:700}
+.eg-good{color:var(--green);font-weight:700}
+.scenario{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:4px;padding:1rem 1.2rem;margin-bottom:1.5rem}
+.scenario-eye{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:.4rem}
+.scenario-body{font-size:.82rem;line-height:1.65;color:#3a3a3e}
+.scenario-body strong{color:var(--text)}
+.buckets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.bucket{background:var(--surface);padding:1.2rem 1.1rem}
+.bucket-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.2rem .5rem;border-radius:2px;margin-bottom:.6rem}
+.b-soul{background:rgba(191,58,13,.1);color:var(--accent)}
+.b-skill{background:rgba(43,101,154,.1);color:var(--blue)}
+.b-ref{background:rgba(107,114,128,.12);color:var(--muted)}
+.bucket-title{font-family:Georgia,serif;font-size:1rem;font-weight:normal;margin-bottom:.3rem}
+.bucket-when{font-size:.72rem;color:var(--muted);margin-bottom:.6rem;line-height:1.4}
+.bucket-rule{font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:.4rem}
+.bucket-examples{font-size:.75rem;color:var(--muted);line-height:1.55}
+.bucket-examples code{font-family:"SFMono-Regular",monospace;font-size:.7rem;background:var(--code);padding:.08rem .28rem;border-radius:2px;color:var(--blue)}
+.bucket-gradient{font-size:.73rem;color:#3a3a3e;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border);line-height:1.5}
+.matrix-wrap{overflow-x:auto}
+.matrix{display:grid;grid-template-columns:130px 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;min-width:500px}
+.mh{background:var(--code);padding:.55rem .9rem;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
+.mh.left{justify-content:flex-start}
+.mrl{background:var(--surface);padding:.9rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;border-right:1px solid var(--border)}
+.mc{background:var(--surface);padding:.85rem 1rem;font-size:.8rem;line-height:1.5;color:#3a3a3e}
+.mc.go{border-top:2px solid var(--green)}
+.mc.ng{border-top:2px solid var(--border);color:var(--muted)}
+.mc.sp{border-top:2px solid var(--blue)}
+.gtag{display:inline-block;font-size:.61rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.15rem .4rem;border-radius:2px;margin-bottom:.3rem}
+.t-go{background:rgba(26,104,55,.1);color:var(--green)}
+.t-ng{background:rgba(107,114,128,.1);color:var(--muted)}
+.t-sp{background:rgba(43,101,154,.1);color:var(--blue)}
+.anatomy{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.an{display:grid;grid-template-columns:1.5rem 150px 1fr;border-bottom:1px solid var(--border);min-height:3.1rem;align-items:stretch}
+.an:last-child{border-bottom:none}
+.an-r{display:flex;align-items:center;justify-content:center;font-size:.54rem;writing-mode:vertical-rl;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.an-r.req{background:rgba(191,58,13,.07);color:var(--accent)}
+.an-r.opt{background:rgba(43,101,154,.07);color:var(--blue)}
+.an-f{padding:.7rem .9rem;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.an-fn{font-size:.8rem;font-weight:700;margin-bottom:.1rem}
+.an-fc{font-family:"SFMono-Regular",monospace;font-size:.68rem;color:var(--blue)}
+.an-d{padding:.7rem 1.1rem;font-size:.79rem;line-height:1.55;color:#3a3a3e;display:flex;align-items:center}
+.an-d code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+.ill-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.ill{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--bad);border-radius:3px;padding:.95rem 1rem}
+.ill-name{font-size:.76rem;font-weight:700;color:var(--bad);margin-bottom:.28rem}
+.ill-sign{font-size:.77rem;color:var(--muted);line-height:1.5;margin-bottom:.4rem}
+.ill-fix{font-size:.73rem;color:var(--green);border-top:1px solid var(--border);padding-top:.38rem}
+.ill-fix::before{content:'→ ';font-weight:700}
+.review{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.rv{display:grid;grid-template-columns:1.5rem 1fr;border-bottom:1px solid var(--border);align-items:stretch}
+.rv:last-child{border-bottom:none}
+.rv-n{background:var(--code);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:.82rem;color:var(--blue);border-right:1px solid var(--border)}
+.rv-b{padding:.8rem 1.1rem}
+.rv-q{font-size:.84rem;font-weight:600;margin-bottom:.15rem}
+.rv-d{font-size:.76rem;color:var(--muted);line-height:1.5}
+.rv-d code{font-family:"SFMono-Regular",monospace;font-size:.71rem;background:var(--code);padding:.1rem .28rem;border-radius:2px;color:var(--blue)}
+.further{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.1rem 1.2rem}
+.fr-title{font-family:Georgia,serif;font-size:1rem;font-weight:normal;margin-bottom:.5rem}
+.fr-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+.fr-link{font-size:.73rem;color:var(--blue);margin-top:.6rem;display:block}
+.positioning{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:1.5rem 1.7rem}
+.pos-eye{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:.7rem}
+.pos-lead{font-family:Georgia,serif;font-size:1.12rem;line-height:1.5;margin-bottom:.9rem;color:var(--text)}
+.pos-lead strong{color:var(--accent);font-weight:normal;font-style:italic}
+.pos-lead a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(43,101,154,.35)}
+.pos-body{font-size:.88rem;line-height:1.7;color:#3a3a3e}
+.pos-body strong{color:var(--text);font-weight:600}
+footer{max-width:820px;margin:4rem auto 0;padding:1.8rem 2rem 0;border-top:2px solid var(--text);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.8rem}
+.f-l{font-family:Georgia,serif;font-size:.87rem;font-style:italic;color:var(--muted)}
+.f-r{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+@media(max-width:640px){
+  .buckets,.further{grid-template-columns:1fr}
+  .ill-grid{grid-template-columns:1fr}
+  .principle{grid-template-columns:2.4rem 1fr}
+  .p-num{font-size:1.8rem}
+  .an{grid-template-columns:1.3rem 110px 1fr}
+  .positioning{padding:1.2rem 1.1rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div style="margin-bottom:1rem;font-size:.7rem;letter-spacing:.06em"><span style="color:rgba(255,255,255,.7);font-weight:600">English</span> <span style="color:rgba(255,255,255,.2);margin:0 .4rem">·</span> <a href="./skill-authoring-guide.html" style="color:rgba(255,255,255,.45);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:.1rem">中文</a></div>
+    <div class="hdr-eye">System of Skills · Methodology Reference</div>
+    <h1>Design a skill collection as a <em>coherent system</em></h1>
+    <p class="hdr-sub">How to write a single skill — Anthropic's official guide covers that. This is the layer above: how a collection of skills and multiple agents form a self-consistent, evolvable, verifiable system. Six design principles + an empirical evaluation loop.</p>
+    <div class="hdr-pills">
+      <span class="pill">Persistence Gradient</span>
+      <span class="pill">System Coherence</span>
+      <span class="pill">Regime Gating</span>
+      <span class="pill">Orthogonal Coverage</span>
+      <span class="pill">Flow</span>
+      <span class="pill">Granularity</span>
+      <span class="pill">Eval Loop</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- POSITIONING -->
+<section class="sec" style="margin-top:3rem">
+  <div class="positioning">
+    <div class="pos-eye">What this guide is — and isn't</div>
+    <p class="pos-lead">This is not a guide to writing a good <strong>single</strong> skill — progressive disclosure, description fields, degrees of freedom: <a href="https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Anthropic's official best-practices</a> covers that thoroughly.</p>
+    <p class="pos-body">This guide addresses the layer above: <strong>how a collection of skills and multiple agents forms a coherent system.</strong> Think of each skill as a module, its trigger as an interface, its output as a contract, and the core prompt as the kernel. When modules multiply and agents start orchestrating each other, <strong>piece-level correctness no longer implies system-level correctness.</strong> That's when you need systems engineering: coverage, orthogonality, interface contracts, regression, end-to-end verification. The six principles below handle <strong>static coherence</strong>; the evaluation loop handles <strong>empirical verification</strong>.</p>
+  </div>
+</section>
+
+<!-- SIX PRINCIPLES -->
+<section class="sec">
+  <div class="scenario">
+    <div class="scenario-eye">Running Example</div>
+    <p class="scenario-body">You're building a coding agent: <strong>write-tests</strong>, <strong>review-diff</strong>, <strong>debug</strong>, <strong>commit</strong>, <strong>refactor</strong> — with a <strong>planner</strong> skill orchestrating them via workflow. Each skill looks fine in isolation. Together, things break. The six principles below use this system to show exactly how and why.</p>
+  </div>
+
+  <div class="sec-eye">Core Principles</div>
+  <h2 class="sec-title">Six Principles</h2>
+  <p class="sec-sub">These six aren't independent rules — they're an interlocking system. Each answers one fundamental design question.</p>
+
+  <div class="principles">
+
+    <div class="principle">
+      <div class="p-num">1</div>
+      <div class="p-body">
+        <div class="p-tagline">Where Does It Live · Persistence Gradient</div>
+        <div class="p-name">Always-on → On-demand → Reference material</div>
+        <div class="p-desc">
+          Where knowledge lives is determined by <strong>frequency of use</strong>, not importance. What must be present every turn goes in the core prompt (Soul); what's only needed for a specific role or scenario goes in a skill; what's only needed for certain sub-tasks within a skill goes in <em>reference/</em> or <em>scripts/</em>.
+        </div>
+        <div class="p-note">
+          The test is not "how important is this?" but "how often is this needed?" A very important rule that's only needed in specific scenarios doesn't belong in the prompt — it belongs in a skill. Wrong layer = either burning context every turn or creating knowledge that's unreachable when needed.
+        </div>
+        <div class="eg"><span class="eg-bad">❌ Typical mistake:</span> "Must run tests before committing" and "never commit secrets" — constitutional rules written into the <code>commit</code> skill. But <code>refactor</code> and <code>review-diff</code> subagents never see <code>commit</code>, so they skip tests and commit dirty code.<br><span class="eg-good">✓ Fix:</span> Constitutional rules belong in Soul. The <code>commit</code> skill only covers the mechanics of how to commit.</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">2</div>
+      <div class="p-body">
+        <div class="p-tagline">Overall Quality · System Coherence</div>
+        <div class="p-name">prompt + skills + scripts form one unified intent</div>
+        <div class="p-desc">
+          Good parts don't guarantee a good system. Every layer — core prompt, each skill, each reference file, each script — must serve the same north star and form a <strong>self-consistent reasoning chain</strong>. Any piece whose intent contradicts the system will produce unpredictable behavior at its boundary.
+        </div>
+        <div class="p-note">
+          Test: pick any skill in the system. Can you find one sentence in it that traces its existence back to a specific principle in the core prompt? If not → the skill is floating. Either add the missing Soul anchor, or delete the skill.
+        </div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">3</div>
+      <div class="p-body">
+        <div class="p-tagline">When to Build · Regime Gating</div>
+        <div class="p-name">User × Scenario determines whether to design a skill</div>
+        <div class="p-desc">
+          A skill's identity is defined by two dimensions: <strong>who uses it (agent/role)</strong> and <strong>in what scenario (trigger/scene)</strong>. If either dimension changes → consider an independent skill. If neither changes → merge, demote to reference, or delete. In multi-agent systems: one planner skill handles orchestration; each agent has its own independent skill — never share a SKILL.md.
+        </div>
+        <div class="p-note">
+          Most common mistake: building a skill because the content "feels related." The right question: "Is this (user × scenario) combination fundamentally different from existing skills?" If not → don't build.
+        </div>
+        <div class="eg"><span class="eg-bad">❌ Typical mistake:</span> You add a <code>review-security</code> skill because "security review feels related to code review." Now <code>review-diff</code> and <code>review-security</code> triggers overlap — the same diff fires both, the agent receives two contradictory authorities.<br><span class="eg-good">✓ Fix:</span> Security review is a mode of <code>review-diff</code>, not a separate regime. Merge it or demote to a reference file.</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">4</div>
+      <div class="p-body">
+        <div class="p-tagline">Completeness · Orthogonal Coverage</div>
+        <div class="p-name">No overlap, no gaps, explicit boundaries</div>
+        <div class="p-desc">
+          For a given agent, all its skills should satisfy: <strong>any system state triggers exactly one skill — no more, no less.</strong> Two skills triggering on the same state → conflict, fix the trigger. Some state has no skill to handle it → gap, fill it or explicitly record as "intentionally uncovered." Every skill ends with <em>Not for X → [[sibling]]</em> to declare its boundary.
+        </div>
+        <div class="p-note">
+          Note: skills are inherently <strong>composable</strong> — multiple can be mounted at runtime. "Exactly one" is a <strong>disambiguation design ideal</strong> — preventing the wrong skill from firing or a needed skill from staying silent — not a hard runtime law. Orthogonality makes selection deterministic, not composition forbidden.
+        </div>
+        <div class="eg"><span class="eg-bad">❌ Typical mistake:</span> You have <code>write-tests</code> and <code>run-tests</code>, but no skill handles "CI is red and I don't know why." The agent improvises every time — different approach each run, impossible to predict or debug.<br><span class="eg-good">✓ Fix:</span> Enumerate all real scenarios. Find uncovered cells — explicitly fill or record as "intentionally uncovered."</div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">5</div>
+      <div class="p-body">
+        <div class="p-tagline">Precise Triggers + Intent First · Flow</div>
+        <div class="p-name">Trigger is a precise entry point; SKILL.md leads with intent</div>
+        <div class="p-desc">
+          The trigger (description field) is an observable, definite condition — not a descriptive label. It must support a yes/no decision for any concrete system state. Inside the skill: lead with <strong>"why this role exists / what good work looks like,"</strong> then methodology. This creates flow: intent establishes direction, methodology emerges naturally within that direction — rather than wielding a tool looking for problems.
+        </div>
+        <div class="p-note">
+          A skill that leads with methodology traps the agent in mechanical execution. A skill that leads with intent lets the agent act purposefully — making reasonable judgments even when the methodology doesn't have explicit coverage. Trust the model's intelligence; constrain less, direct more.
+        </div>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="p-num">6</div>
+      <div class="p-body">
+        <div class="p-tagline">Skill Size · Granularity Discipline</div>
+        <div class="p-name">One skill clearly says one thing</div>
+        <div class="p-desc">
+          Granularity should match the regime it serves. Too coarse: one skill tries to cover everything, trigger becomes vague, content conflicts → split by regime. Too thin: content can't sustain an independent regime → merge into parent skill or demote to reference file. <strong>Right granularity:</strong> reading the description tells you clearly "when to use this"; reading SKILL.md tells the agent "how to act in this regime." Measure by density, not line count — <strong>substantive, tight, and clear</strong> is the standard.
+        </div>
+        <div class="p-note">
+          Test: show this skill's description to someone unfamiliar with the system. Can they judge "does this situation call for this skill?" If they need a lot of context first → either the trigger is imprecise or the skill is too coarse.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- THREE BUCKETS -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Principle 1 — Deep Dive · Three Buckets</div>
+  <h2 class="sec-title">Where Does Each Piece of Knowledge Belong?</h2>
+  <p class="sec-sub">Layer by frequency of use, not importance. Important knowledge that's only needed on demand shouldn't live in the prompt.</p>
+
+  <div class="buckets">
+    <div class="bucket">
+      <span class="bucket-badge b-soul">Soul / Core Prompt</span>
+      <div class="bucket-title">Always present</div>
+      <div class="bucket-when">This content is in context regardless of which role is active</div>
+      <div class="bucket-rule">Put here if:</div>
+      <div class="bucket-examples">"Would this need to be present even when the agent is completely idle, with no task running?"<br><br>
+        Yes: north star goal · lifecycle state machine · constitutional constraint pointers<br><br>
+        No: any role-specific methodology, any scenario-specific rule
+      </div>
+    </div>
+    <div class="bucket">
+      <span class="bucket-badge b-skill">Skill</span>
+      <div class="bucket-title">Mounted by regime</div>
+      <div class="bucket-when">Only loaded when the specific role/scenario is active; otherwise not in context</div>
+      <div class="bucket-rule">Put here if:</div>
+      <div class="bucket-examples">"Is this only needed when a particular role is doing a particular thing?"<br><br>
+        Yes: role's reason to exist · standard of good work · wisdom and experience patterns · boundary declarations<br><br>
+        No: code · domain facts · deep methodology detail (→ reference)
+      </div>
+    </div>
+    <div class="bucket">
+      <span class="bucket-badge b-ref">reference / scripts</span>
+      <div class="bucket-title">Probabilistic access</div>
+      <div class="bucket-when">Read by the agent on encountering specific sub-tasks; not every time</div>
+      <div class="bucket-rule">Put here if:</div>
+      <div class="bucket-examples">"Given the skill is already active, is this only needed in certain sub-cases?"<br><br>
+        <code>reference/</code>: deep methodology, decision trees, routing tables, domain facts<br>
+        <code>scripts/</code>: executable scripts, tool code, data processing<br><br>
+        Higher importance + higher use probability → closer to SKILL.md body
+      </div>
+      <div class="bucket-gradient">
+        <strong>Gradient principle:</strong> the reference folder has its own gradient — high-frequency methodology files first, low-frequency last. The whole skill directory is a knowledge funnel from near to far, high-frequency to low.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGIME MATRIX -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Principle 3 — Deep Dive · Decision Matrix</div>
+  <h2 class="sec-title">User × Scenario: When to Build a New Skill</h2>
+
+  <div class="matrix-wrap">
+    <div class="matrix">
+      <div class="mh left">User ↓ · Scenario →</div>
+      <div class="mh">Scenario changed</div>
+      <div class="mh">Same scenario</div>
+
+      <div class="mrl">User changed</div>
+      <div class="mc go">
+        <div class="gtag t-go">Build 2 independent skills</div>
+        Both dimensions changed. Write separate skills, each with its own trigger, Soul anchor, and boundary declaration. Never share SKILL.md.
+      </div>
+      <div class="mc go">
+        <div class="gtag t-go">Build 2 independent skills</div>
+        Same scenario but different user. Purpose, wisdom, and output differ — sharing SKILL.md gives both agents the wrong context.
+      </div>
+
+      <div class="mrl">Same user</div>
+      <div class="mc sp">
+        <div class="gtag t-sp">Single skill multi-mode, or sub-skill</div>
+        Same agent, different scenario. First consider a "phase-aware" single skill (multi-mode); only split to sub-skill if the scenario difference is large enough.
+      </div>
+      <div class="mc ng">
+        <div class="gtag t-ng">Don't build a new skill</div>
+        This is supplementary material, not a new regime. Merge into existing skill's reference/ or delete. Building one only creates trigger conflicts.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;font-size:.8rem;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--text)">Multi-agent coordination:</strong> one planner skill (orchestration, routing, lifecycle) + N agent sub-skills (each with its own intent and methodology). Planner manages scheduling, not execution. Constitutional rules shared by all agents → Soul, not duplicated into each sub-skill.
+  </div>
+</section>
+
+<!-- SKILL.MD ANATOMY -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Principle 5 — Deep Dive · SKILL.md Anatomy</div>
+  <h2 class="sec-title">SKILL.md Structure: Intent First, Methodology Second</h2>
+  <p class="sec-sub">SKILL.md holds text and methodology only. Code → scripts/, decision trees → reference/, domain facts → materials/. (Short inline examples are fine.)<br>Note: Anthropic's official format only requires <strong>name</strong> and <strong>description</strong>. Fields marked "required" below are this methodology's conventions for system coherence — not platform hard requirements.</p>
+
+  <div class="anatomy">
+    <div class="an">
+      <div class="an-r req">Req</div>
+      <div class="an-f"><div class="an-fn">Trigger</div><div class="an-fc">description: Use when…</div></div>
+      <div class="an-d">Observable, definite entry condition. Yes/no decision for any concrete state. Must include exclusion: <code>Not for X (→ [[sibling]])</code>. This is a machine-readable contract, not descriptive text.</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">Req</div>
+      <div class="an-f"><div class="an-fn">Soul anchor</div><div class="an-fc">**Soul anchor:** `id`</div></div>
+      <div class="an-d">Traces to a specific principle in the core prompt. Without this, the skill is floating — reviewers and agents can't verify system coherence.</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">Req</div>
+      <div class="an-f"><div class="an-fn">Intent</div><div class="an-fc">## Why This Role Exists</div></div>
+      <div class="an-d">1–3 sentences. Why this role exists. Written as a standard of reasoning quality, not a step list. This is the skill's soul — the agent builds direction from here; then methodology becomes meaningful.</div>
+    </div>
+    <div class="an">
+      <div class="an-r req">Req</div>
+      <div class="an-f"><div class="an-fn">Boundary</div><div class="an-fc">## Not for</div></div>
+      <div class="an-d">Explicit exclusions: <code>→ not doing X → [[sibling skill]]</code>. This is the interface contract. Without it, orthogonality can't be verified and scope creep is invisible.</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">Opt</div>
+      <div class="an-f"><div class="an-fn">Standard of good work</div><div class="an-fc">## What Good Work Looks Like</div></div>
+      <div class="an-d">Describes success from externally observable output quality. Lets the agent self-evaluate without human judgment. Written as "good work should…", not "which steps were completed."</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">Opt</div>
+      <div class="an-f"><div class="an-fn">Wisdom & experience</div><div class="an-fc">## Experience & Wisdom</div></div>
+      <div class="an-d">Accumulated patterns and pitfalls. <strong>Must be labeled "reference, not constraint."</strong> Constitutional invariants (write≠call, freeze-before-results…) get their own section, explicitly labeled as law. Never mix the two.</div>
+    </div>
+    <div class="an">
+      <div class="an-r opt">Opt</div>
+      <div class="an-f"><div class="an-fn">Reference table</div><div class="an-fc">## Tools & References</div></div>
+      <div class="an-d">Scenario → file path. Text only, no code. Every listed file must exist and have content. Skill is the index; depth lives in <code>reference/</code>. High-frequency first, low-frequency last.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAILURE MODES -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Diagnostics · Six Failure Modes</div>
+  <h2 class="sec-title">What Goes Wrong</h2>
+
+  <div class="ill-grid">
+    <div class="ill">
+      <div class="ill-name">Vague trigger</div>
+      <div class="ill-sign">description can fire in multiple different states; no deterministic judgment possible.</div>
+      <div class="ill-fix">Rewrite trigger as an observable condition. Add exclusion declarations. Every concrete state must yield a clear yes or no.</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Trigger conflict</div>
+      <div class="ill-sign">Two skills can both trigger in the same system state — agent faces two authorities.</div>
+      <div class="ill-fix">Draw the state diagram. Ensure every state triggers at most one skill. Add mutual-exclusion declarations in both descriptions.</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Two roles sharing one SKILL.md</div>
+      <div class="ill-sign">Two different agents use the same skill file — different intent, wisdom, and output forced to merge.</div>
+      <div class="ill-fix">Split by role. Shared methodology → reference file. Shared rules → Soul or constitutional skill.</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Wrong layer</div>
+      <div class="ill-sign">Cross-role constitutional rules buried in one role's L1 skill (others can't see it). Or role-specific content in Soul (wasting context every turn).</div>
+      <div class="ill-fix">Needed by all roles → Soul. Only this role → L1 skill. Only for specific sub-tasks → reference.</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Heavy code in SKILL.md</div>
+      <div class="ill-sign">Skill file contains implementation code, decision trees, technical schema. Methodology intent drowned by detail; skill becomes brittle (code changes = skill changes).</div>
+      <div class="ill-fix">Code → <code>scripts/</code>. Decision trees → <code>reference/routing-table.md</code>. Schema → <code>reference/</code>. Short inline examples are fine.</div>
+    </div>
+    <div class="ill">
+      <div class="ill-name">Coverage gap</div>
+      <div class="ill-sign">A real system state exists but no skill owns it. Agent enters this state with no guidance — improvises.</div>
+      <div class="ill-fix">List all meaningful system states. Find an owner for each. Gaps must be filled or explicitly recorded as "intentionally uncovered."</div>
+    </div>
+  </div>
+</section>
+
+<!-- SELF-REVIEW -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Pre-publish Checklist · Static Coherence</div>
+  <h2 class="sec-title">Seven Questions Before You Ship</h2>
+
+  <div class="review">
+    <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">Does each skill map to a unique (user, scenario) pair?</div><div class="rv-d">If two skills serve the same agent with the same trigger conditions, merge them. Same regime = no need for two skills.</div></div></div>
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Can every skill be traced to a specific principle in the Soul?</div><div class="rv-d">Each skill should complete: "This skill serves Soul principle [X] because…" Can't complete it → either Soul is missing the node, or the skill doesn't belong in this system.</div></div></div>
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">Is triggering unambiguous for any system state?</div><div class="rv-d">Put all skill descriptions side by side and look for overlaps. Have overlaps → trigger conflict, fix exclusion declarations. Complete state space covered? Have gaps → add a skill or explicitly document.</div></div></div>
+    <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">Is SKILL.md free of heavy code or implementation details?</div><div class="rv-d">Scan for code blocks, decision trees, data schema (short examples are fine). Found some → move to <code>scripts/</code> or <code>reference/</code>. SKILL.md is a methodology document, not an implementation document.</div></div></div>
+    <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">Does every reference file have a skill pointing to it?</div><div class="rv-d">Search every SKILL.md for each reference filename. Zero hits = orphan file, agent will never find it. Add to some skill's reference table, or delete.</div></div></div>
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">Are wisdom (reference) and law (inviolable) labeled separately?</div><div class="rv-d">Constitutional constraints must be labeled as inviolable. Experience patterns must be labeled "reference, not constraint." Mixed together → agent doesn't know what's flexible and what's a hard line.</div></div></div>
+    <div class="rv"><div class="rv-n">7</div><div class="rv-b"><div class="rv-q">Does each skill's granularity clearly say one thing?</div><div class="rv-d">Read the description — can someone unfamiliar with the system judge "does this situation call for this skill?" Needs a lot of context → trigger imprecise or skill too coarse. Content too thin to stand alone → demote to reference file. Standard: substantive, not line count.</div></div></div>
+  </div>
+</section>
+
+<!-- EVALUATION LOOP -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Empirical Verification · Beyond Static Design</div>
+  <h2 class="sec-title">The Seventh Thing: Evaluate the System, Not Just the Parts</h2>
+  <p class="sec-sub">The six principles and seven questions audit <strong>static design</strong> coherence — it reads right, but it might not run right. Whether the system truly covers the state space, whether triggering is truly deterministic, whether changing one thing breaks another — you only know by running it on real inputs.<br><span style="color:var(--blue)">Single-skill evaluation asks "does this piece work?" System-level evaluation asks "do all pieces together cover the space, trigger unambiguously, survive changes, and run end-to-end?"</span></p>
+
+  <div class="review">
+    <div class="rv"><div class="rv-n">1</div><div class="rv-b"><div class="rv-q">Kill the skill, run it anyway: establish a baseline</div><div class="rv-d">To verify a skill is truly useful, remove it from the system first. Run the agent on the same tasks without it. Record where it fails and how. That failure is the baseline — and the justification for the skill's existence. <strong>No reproducible failure baseline = no basis for building a skill.</strong></div></div></div>
+    <div class="rv"><div class="rv-n">2</div><div class="rv-b"><div class="rv-q">Trigger disambiguation regression: selection must be deterministic</div><div class="rv-d">Feed all skill descriptions as detection inputs across boundary and ambiguous scenarios. For each input: which skill actually fired? One state fires two → trigger ambiguity. Should have fired, didn't → trigger failure. Lock this detection set as a rerunnable regression suite. Run it on every description change — you'll miss overlaps reading them by hand.</div></div></div>
+    <div class="rv"><div class="rv-n">3</div><div class="rv-b"><div class="rv-q">Coverage gap detection: no black holes in the state space</div><div class="rv-d">Enumerate real combinations across the user × scenario matrix. For each cell: what does the system do with a request that lands here? Cells where no skill takes over are coverage gaps. List them explicitly — either fill with a skill or record as "intentionally uncovered." This is a regression item, not a one-time check.</div></div></div>
+    <div class="rv"><div class="rv-n">4</div><div class="rv-b"><div class="rv-q">Cross-agent output contract tests: verify artifacts, not process</div><div class="rv-d">Agents communicate via fixed artifacts (agreed paths, fields, formats) — these are the system's interface contracts. Write tests that only check artifacts: does the upstream output satisfy the structure and fields the downstream declared it needs? Contracts are the rare part that can be hard-asserted; most behavioral evals use natural-language rubrics graded by model.</div></div></div>
+    <div class="rv"><div class="rv-n">5</div><div class="rv-b"><div class="rv-q">Change one, test everything: system-wide regression suite</div><div class="rv-d">Skills couple through Soul, shared reference, trigger boundaries, and output contracts — changing one quietly breaks another. Combine baseline, disambiguation, coverage, and contract tests into <strong>one regression suite</strong>. Run the whole suite after any skill change, not just the changed skill's cases. System-level defects look exactly like "every piece is right, the combination is wrong."</div></div></div>
+    <div class="rv"><div class="rv-n">6</div><div class="rv-b"><div class="rv-q">End-to-end + multi-model (Haiku / Sonnet / Opus)</div><div class="rv-d">Finally, run the full pipeline: give a real task requiring multiple agents, let the planner orchestrate from start to final output. Assert the whole chain — routing, lifecycle, north star alignment. Run the same scenarios on Haiku / Sonnet / Opus: weaker models amplify ambiguous triggers and imprecise intent. A system that runs reliably on the weakest model is a truly deterministic system.</div></div></div>
+  </div>
+
+  <div style="margin-top:1.1rem;font-size:.78rem;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--text)">Provenance note:</strong> "Baseline without skill, evaluations are your source of truth, multi-model testing" comes from Anthropic's official best-practices. "No failing test before writing a skill (RED → GREEN → REFACTOR), pressure scenarios to surface rationalization" comes from superpowers' writing-skills. Both address only single-skill evaluation — extending to trigger disambiguation, coverage, cross-agent contracts, system-wide regression, and end-to-end orchestration is this methodology's extrapolation. Also: Anthropic currently has <strong>no built-in eval runner</strong>; you build your own. Evals mostly use natural-language rubrics graded by model — not strict assertion-style unit tests.
+  </div>
+</section>
+
+<!-- FURTHER READING -->
+<hr class="div">
+<section class="sec">
+  <div class="sec-eye">Going Deeper</div>
+  <h2 class="sec-title">Further Reading</h2>
+  <p class="sec-sub">Both concepts were referenced throughout — here's the complete definition and implementation guidance.</p>
+
+  <div class="further">
+    <div class="fr-card">
+      <div class="fr-title">Output Contracts</div>
+      <div class="fr-desc">
+        Each skill should explicitly declare what it produces — artifact name, file path, format convention. Upstream and downstream communicate via fixed artifacts, not direct coupling. This lets skills evolve independently without breaking the system. Done right, you can swap any skill's implementation as long as it produces the same artifact.
+      </div>
+      <span class="fr-link">→ Implementation: define a fixed path + field contract artifact (e.g. <code>handoff.json</code>) for each handoff point, write it into the skill's "output contract" section, and assert it from both sides.</span>
+    </div>
+    <div class="fr-card">
+      <div class="fr-title">Evolvability (Locked vs Seed)</div>
+      <div class="fr-desc">
+        Not all skills should be modifiable by the agent. Distinguish "locked" (Constitutional/Locked) from "evolvable" (Seed): locked covers constitutional constraints and evaluation authorities — agent can read but not change; evolvable covers methodology skills — agent can improve during use. This determines the system's trust model.
+      </div>
+      <span class="fr-link">→ Implementation: use a <code>locked/</code> and <code>seed/</code> directory split (or file-level annotations) — constitutional constraints in locked/ (read-only), methodology skills in seed/ (evolvable).</span>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="f-l">Intent sets direction. Methodology emerges naturally within that direction.</div>
+  <div class="f-r">Persistence · Coherence · Regime · Coverage · Flow · Granularity · Eval</div>
+</footer>
+
+</body>
+</html>
